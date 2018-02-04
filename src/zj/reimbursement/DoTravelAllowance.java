@@ -20,6 +20,8 @@ public class DoTravelAllowance implements Action{
 		String ccsj = "";//出差时间
 		String jsrq = "";//结束日期
 		String jssj = "";//结束时间
+		String xm = "";
+		String seclevel = "0";
 		int days=0;
 		String sql = " Select tablename From Workflow_bill Where id in ("
 				+ " Select formid From workflow_base Where id= " + workflowId
@@ -36,39 +38,52 @@ public class DoTravelAllowance implements Action{
 			ccsj = Util.null2String(rs.getString("ccsj"));
 			jsrq = Util.null2String(rs.getString("jsrq"));
 			jssj = Util.null2String(rs.getString("jssj"));
+			xm = Util.null2String(rs.getString("xm"));
 		}
+		sql="select seclevel from hrmresource where id="+xm;
+		rs.executeSql(sql);
+		if(rs.next()){
+			seclevel = Util.null2String(rs.getString("seclevel"));
+		}
+		
+		int money=0;
+		if(Util.getFloatValue(seclevel,0)<Util.getFloatValue("40",0)){
+		
 		String startDay=ccrq+" "+ccsj;
 		String endDay=jsrq+" "+jssj;
 		if(endDay.compareTo(startDay)<=0){
-			return SUCCESS;
+			money =0;
+		}else{
+			//log.writeLog("startDay:"+startDay+"endDay"+endDay);
+			
+			sql="select DATEDIFF(DAY,'"+ccrq+"','"+jsrq+"') as days";
+			//log.writeLog("aa"+sql);
+			rs.executeSql(sql);
+			if(rs.next()){
+				days = rs.getInt("days");
+			}
+			if(days == 0){
+				money=money+getDayMoney(ccsj,jssj);
+			}else if(days == 1){
+				money=money+getDayMoney(ccsj,"24:00");
+				money=money+getDayMoney("00:00",jssj);
+			}else if(days > 1){
+				money=money+getDayMoney(ccsj,"24:00");
+				money=money+(days-1)*65;
+				money=money+getDayMoney("00:00",jssj);
+			}
+			//log.writeLog("aa money"+money);
+			int count=0;
+			sql = "select count(1) as count from "+tableName+"_dt1 where mainid="+mainId+" and fykm='0'";
+			rs.executeSql(sql);
+			if(rs.next()){
+				count = rs.getInt("count");
+			}
+			if(count > 0){
+				money = money-(count*25);
+			}
 		}
-		//log.writeLog("startDay:"+startDay+"endDay"+endDay);
-		int money=0;
-		sql="select DATEDIFF(DAY,'"+ccrq+"','"+jsrq+"') as days";
-		//log.writeLog("aa"+sql);
-		rs.executeSql(sql);
-		if(rs.next()){
-			days = rs.getInt("days");
-		}
-		if(days == 0){
-			money=money+getDayMoney(ccsj,jssj);
-		}else if(days == 1){
-			money=money+getDayMoney(ccsj,"24:00");
-			money=money+getDayMoney("00:00",jssj);
-		}else if(days > 1){
-			money=money+getDayMoney(ccsj,"24:00");
-			money=money+(days-1)*65;
-			money=money+getDayMoney("00:00",jssj);
-		}
-		//log.writeLog("aa money"+money);
-		int count=0;
-		sql = "select count(1) as count from "+tableName+"_dt1 where mainid="+mainId+" and fykm='0'";
-		rs.executeSql(sql);
-		if(rs.next()){
-			count = rs.getInt("count");
-		}
-		if(count > 0){
-			money = money-(count*25);
+		
 		}
 		//log.writeLog("aa money"+money);
 		sql="update "+tableName+" set ccbt="+money+" where requestid="+requestId;
