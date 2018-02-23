@@ -214,10 +214,10 @@ public class CreateCertificate {
 					yzzje_hl=iu.mul(yzzje, lv);
 					bxje_hl=iu.mul(bxje, lv);
 					bt_hl=iu.mul(bt, lv);
-					if(bxje.compareTo(yzzje)==0){
+					if(Util.getFloatValue(bxje)==Util.getFloatValue(yzzje)){
 						type="0";
 						pzsm=dfr+" 核销    "+rq1+"~"+rq2+" "+bxsm+" "+"差旅费";
-					}else if(bxje.compareTo(yzzje)>0){
+					}else if(Util.getFloatValue(bxje)>Util.getFloatValue(yzzje)){
 						type="1";
 						pzsm=dfr+" 核销    "+rq1+"~"+rq2+" "+bxsm+" "+"差旅费";
 						pzsm2=dfr+" 出差报销";
@@ -305,10 +305,10 @@ public class CreateCertificate {
 						skdwname = Util.null2String(rs_dt.getString("skdwmc"));
 					}
 					
-					if(kxje.compareTo(zzjr)==0){
+					if(Util.getFloatValue(kxje)==Util.getFloatValue(zzjr)){
 						type="0";
 						pzsm=dfr+" "+hxsm;
-					}else if(kxje.compareTo(zzjr)>0){
+					}else if(Util.getFloatValue(kxje)>Util.getFloatValue(zzjr)){
 						type="1";
 						pzsm=dfr+" "+hxsm;
 						pzsm2=skdwname+" "+hxsm;
