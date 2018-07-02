@@ -17,7 +17,6 @@ public class CancelBudgetAction implements Action {
     /**
      * 取消物品申请单的明细物品申请的预算
      */
-	@Override
 	public String execute(RequestInfo info) {
 		String requestid = info.getRequestid();
 		String workflow_id = info.getWorkflowid();

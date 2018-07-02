@@ -1,7 +1,6 @@
 package hsproject.dao;
 
 import hsproject.bean.ProcessFieldBean;
-import hsproject.bean.ProjectFieldBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +9,14 @@ import weaver.conn.RecordSet;
 import weaver.general.Util;
 
 /**
- * 获取项目字段列表
+ * 获取项目过程字段列表
  * 
- * @author jianyong.tang 2018-01-16
+ * @author jianyong.tang 2018-01-30
  * 
  */
 public class ProcessFieldDao {
 	/**
-	 * 获取对应项目类型启用的字段
+	 * 获取对应项目过程类型启用的字段
 	 * 
 	 * @param prjtype
 	 * @param groupid

@@ -20,7 +20,7 @@ public class TravelXmlUtil {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		String time = sdf.format(date);
 
-		Head head = new Head("EC.WF_HNYG-001_" + time, "1", "OA", "1", "", "",
+		Head head = new Head("EC.WF_HNYG-001_" + time, "1", "OA", "1", "userEC", "P@ss0rd",
 				"", "");
 		List<Head> heads = new ArrayList<Head>();
 		ItemEsb itemEsb = new ItemEsb();
@@ -32,9 +32,6 @@ public class TravelXmlUtil {
 		if (!"".equals(workcode)) {
 			itemEsb.setWorkcode(workcode);
 		}
-		if (!"".equals(requestid)) {
-			itemEsb.setRequestId(requestid);
-		}
 		if (!"".equals(xmlPay)) {
 			itemEsb.setxmlPay(xmlPay);
 		}
@@ -44,6 +41,7 @@ public class TravelXmlUtil {
 		List<ListEsb> listEsbs = new ArrayList<ListEsb>();
 		listEsbs.add(listEsb);
 		listEsb.setITEM(itemEsbs);
+		head.setComments(requestid);
 		heads.add(head);
 		data.setHeads(heads);
 		data.setLIST(listEsbs);

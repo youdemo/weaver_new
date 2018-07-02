@@ -21,7 +21,7 @@ public class ProcessInfoDao {
 	 * @param prjid
 	 * @return
 	 */
-	public Map<String, String> getProjetCommonData(String processId) {
+	public Map<String, String> getProcessCommonData(String processId) {
 		if ("".equals(processId)) {
 			return null;
 		}
@@ -48,7 +48,7 @@ public class ProcessInfoDao {
 	 * @param prjid
 	 * @return
 	 */
-	public Map<String, String> getProjetDefineData(String processId) {
+	public Map<String, String> getProcessDefineData(String processId) {
 		if ("".equals(processId)) {
 			return null;
 		}

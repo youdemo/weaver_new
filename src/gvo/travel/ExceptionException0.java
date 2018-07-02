@@ -10,7 +10,7 @@ package gvo.travel;
 
 public class ExceptionException0 extends Exception{
     
-    private gvo.travel.ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.ExceptionE faultMessage;
+    private ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.ExceptionE faultMessage;
     
     public ExceptionException0() {
         super("ExceptionException0");
@@ -24,11 +24,11 @@ public class ExceptionException0 extends Exception{
       super(s, ex);
     }
     
-    public void setFaultMessage(gvo.travel.ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.ExceptionE msg){
+    public void setFaultMessage(ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.ExceptionE msg){
        faultMessage = msg;
     }
     
-    public gvo.travel.ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.ExceptionE getFaultMessage(){
+    public ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.ExceptionE getFaultMessage(){
        return faultMessage;
     }
 }

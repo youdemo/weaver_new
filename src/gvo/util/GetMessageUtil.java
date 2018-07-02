@@ -20,7 +20,7 @@ public class GetMessageUtil {
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobj = jsonarray.getJSONObject(i);
                 status = jsonobj.getString("status");
-                System.out.println("status=" + status);
+//                System.out.println("status=" + status);
             }
         } catch (Exception e) {
             System.out.println("ERROR");
@@ -43,13 +43,13 @@ public class GetMessageUtil {
         return message;
     }
 
-    public static void main(String args[]) {
-    	
-        String result = "{\"datas\":[{\"message\":\"总账科目不能为空!\",\"serial_no_sap\":\"V000520170501\",\"status\":\"F\"}]}";
-        GetMessageUtil gmu = new GetMessageUtil();
-        String status = gmu.getStatus(result);
-        System.out.println("status=" + status);
-        String message = gmu.getMessage(result);
-        System.out.println("message=" + message);
-    }
+//    public static void main(String args[]) {
+//    	
+//        String result = "{\"datas\":[{\"message\":\"总账科目不能为空!\",\"serial_no_sap\":\"V000520170501\",\"status\":\"F\"}]}";
+//        GetMessageUtil gmu = new GetMessageUtil();
+//        String status = gmu.getStatus(result);
+//        System.out.println("status=" + status);
+//        String message = gmu.getMessage(result);
+//        System.out.println("message=" + message);
+//    }
 }

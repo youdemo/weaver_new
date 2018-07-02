@@ -17,7 +17,6 @@ public class FreezeBudgetAction implements Action {
     /**
      * 冻结物品申请单的明细物品申请的预算
      */
-	@Override
 	public String execute(RequestInfo info) {
 		String requestid = info.getRequestid();
 		String workflow_id = info.getWorkflowid();

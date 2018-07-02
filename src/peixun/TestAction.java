@@ -15,7 +15,9 @@ public class TestAction implements Action{
 		String workflowID = info.getWorkflowid();
 		String requestid = info.getRequestid();
 		RecordSet rs = new RecordSet();
-		RecordSetDataSource rsd = new RecordSetDataSource("TEST");
+		log.writeLog("aaa");
+		//RecordSetDataSource rsd = new RecordSetDataSource("TEST");
+		//String tablename = info.getRequestManager().getBillTableName();去表名
 		String tableName = "";
 		String mainID = "";
 		String sql = " Select tablename From Workflow_bill Where id in ("

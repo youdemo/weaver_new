@@ -14,9 +14,9 @@ public class TestDemo {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String a1="125.12";
-		String a2="124.12";
-		System.out.println(a1.compareTo(a2)>0);
+		String a1="144000.00";
+		String a2="144000.01";
+		System.out.println(Util.getFloatValue(a1)==Util.getFloatValue(a2));
 		String cc="123";
 		System.out.println(cc.split(",")[0]);
 		String aa="1,11,11";

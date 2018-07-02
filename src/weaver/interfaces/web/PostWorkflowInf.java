@@ -26,7 +26,7 @@ public class PostWorkflowInf extends BaseBean {
 		if (rs.next()) {
 			workflowid = Util.null2String(rs.getString("workflowid"));
 		}
-		String sql="select * from workflow_base a where  isvalid=1 and id ="+workflowid;
+		String sql="select * from workflow_base a where  isvalid in(1,3) and id ="+workflowid;
 		rs.execute(sql);
 		return rs.next();
 	}
@@ -337,7 +337,7 @@ public class PostWorkflowInf extends BaseBean {
 						creater_loginid = Util.null2String(rs1.getString("loginid"));
 					}
 					if (!"".equals(workflowid)) {
-						rs2.executeSql("select * from workflow_base where id="
+						rs2.executeSql("select * from workflow_base where id=" 
 								+ workflowid);
 						if (rs2.next()) {
 							workflowname = Util.null2String(rs2.getString("workflowname"));

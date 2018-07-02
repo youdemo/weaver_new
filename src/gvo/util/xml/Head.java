@@ -26,7 +26,7 @@ public class Head implements Serializable {
     public Head() {
     }
 
-    public Head(String biztransactionid, String count, String consumer, String srvlevel, String account, String password, String use, String comments) {
+    public Head(String biztransactionid,String count, String consumer, String srvlevel, String account, String password, String use, String comments) {
         super();
         this.BIZTRANSACTIONID = biztransactionid;
         this.COUNT = count;
@@ -70,7 +70,7 @@ public class Head implements Serializable {
         this.SRVLEVEL = srvlevel;
     }
 
-    public String getAccount() {
+	public String getAccount() {
         return ACCOUNT;
     }
 

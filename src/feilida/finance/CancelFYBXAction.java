@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class CancelFYBXAction implements Action {
     BaseBean log = new BaseBean();
-	@Override
 	public String execute(RequestInfo info) {
 		String requestid = info.getRequestid();
 		String workflow_id = info.getWorkflowid();
@@ -34,7 +33,6 @@ public class CancelFYBXAction implements Action {
 		String COMPID = "";
 		String DEPTID = "";
 		String GPKEY = "";
-		// String xingzhi = "";
 		String sql = "Select tablename,id From Workflow_bill Where id=(";
 		sql += "Select formid From workflow_base Where id=" + workflow_id + ")";
 		rs.executeSql(sql);

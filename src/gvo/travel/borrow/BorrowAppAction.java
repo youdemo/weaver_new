@@ -1,15 +1,10 @@
 package gvo.travel.borrow;
 
+import gvo.travel.ECFI_WF_0_CreateRequestServiceECSoapBindingQSServiceStub.Response;
 import gvo.travel.TravelXmlUtil;
 import gvo.util.xml.SaxXmlUtil;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
@@ -25,7 +20,6 @@ public class BorrowAppAction implements Action {
 	 **/
 	BaseBean log = new BaseBean();
 
-	@Override
 	public String execute(RequestInfo info) {
 		log.writeLog("进入出差申请（含借款）流程BorrowAppAction————————");
 		String tableName = "";
@@ -35,7 +29,6 @@ public class BorrowAppAction implements Action {
 		RecordSet rs = new RecordSet();
 		RecordSet res = new RecordSet();
 		String mainID = "";
-		String workcode = "";// 工号
 		String txr = "";// 填写人
 		String sqrq = "";// 填写日期
 		String sqr = "";// 申请人
@@ -49,20 +42,18 @@ public class BorrowAppAction implements Action {
 		if (rs.next()) {
 			tableName = Util.null2String(rs.getString("tablename"));
 		}
-		sql = "select id,txr,sqrq,sqr,szgs,szbm,jkje,sfxyjk from " + tableName + " where requestid=" + requestid;
+		if (!"".equals(tableName)) {
+		sql = "select * from " + tableName + " where requestid=" + requestid;
 		rs.executeSql(sql);
 		if (rs.next()) {
 			mainID = Util.null2String(rs.getString("id"));
-			txr = Util.null2String(rs.getString("txr"));
-			sqrq = Util.null2String(rs.getString("sqrq"));
-			sqr = Util.null2String(rs.getString("sqr"));
-			szgs = Util.null2String(rs.getString("szgs"));
-			szbm = Util.null2String(rs.getString("szbm"));
-			jkje = Util.null2String(rs.getString("jkje"));
+			txr = getcode(Util.null2String(rs.getString("txr")),"1");
+			sqrq =  Util.null2String(rs.getString("sqrq"));
+			sqr = getcode(Util.null2String(rs.getString("sqr")),"1");
+			szgs = getcode(Util.null2String(rs.getString("szgs")),"3");
+			szbm = getcode(Util.null2String(rs.getString("szbm")),"2");
+			jkje  = Util.null2String(rs.getString("jkje"));
 			sfxyjk = Util.null2String(rs.getString("sfxyjk"));
-			mainID = Util.null2String(rs.getString("ID"));
-			workcode = Util.null2String(rs.getString("gh"));
-
 		}
 		if ("1".equals(sfxyjk) || "".equals(sfxyjk)) {
 			return SUCCESS;
@@ -80,31 +71,29 @@ public class BorrowAppAction implements Action {
 			e1.printStackTrace();
 		}
 		JSONObject jsonobj = new JSONObject();
-		JSONArray Array = new JSONArray();
 		JSONObject details = new JSONObject();
 		try {
 			jsonobj.put("HEADER", head);
 			jsonobj.put("DETAILS", details);
 		} catch (JSONException e1) {
+			log.writeLog("错误日志----" + e1.getMessage());
 			e1.printStackTrace();
 		}
-		Array.put(jsonobj);
 		TravelXmlUtil tran = new TravelXmlUtil();
-		String json = tran.javaToXml(Array.toString(), workcode, "", "");
-		log.writeLog("requestid=" + requestid);
-		log.writeLog("开始————————json" + json);
+		String json = tran.javaToXml(jsonobj.toString(), txr, requestid, "");
+//		log.writeLog("requestid=" + requestid);
+		log.writeLog("打印json————————" + json);
 		BorrowWebService borrow = new BorrowWebService();
 		String sign = "";
 		String MESSAGE = "";
-		log.writeLog("json——————————" + json);
-		Map<String, String> map = new HashMap<String, String>();
 		try {
-			map = borrow.getResultMethod(json);
-			sign = map.get("sign");
-			MESSAGE = map.get("MESSAGE");
-			log.writeLog("sign=" + sign);
-			log.writeLog("message=" + MESSAGE);
+			Response result = borrow.getResultMethod(json);
+			sign = result.getSIGN();
+		 	MESSAGE = result.getMessage();
+//			log.writeLog("sign=" + sign);
+//			log.writeLog("message=" + MESSAGE);
 		} catch (Exception e) {
+			log.writeLog("错误日志----" + e.getMessage());
 			e.printStackTrace();
 		}
 		SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
@@ -112,13 +101,33 @@ public class BorrowAppAction implements Action {
 		String para1 = "OA_ID";
 		String message = saxXmlUtil.getResult(para, MESSAGE);
 		String oa_id = saxXmlUtil.getResult(para1, MESSAGE);
-		String sql_update = "update " + tableName + " set sign='" + sign
-				+ "',message='" + message + "',jkrqid='" + oa_id
-				+ "' where requestid=" + requestid;
+		String sql_update = "update " + tableName + " set sign='" + sign + "',message='" + message + "',jkrqid='" + oa_id + "' where requestid=" + requestid;
 		res.execute(sql_update);
-		log.writeLog("错误信息2————————" + sql_update);
-
+//		log.writeLog("更新语句————————" + sql_update);
+		} else {
+//			log.writeLog("流程表信息获取失败!");
+			return "-1";
+		}
 		return SUCCESS;
 	}
-
+	public String getcode(String id,String type){
+		  RecordSet rs = new RecordSet();
+		  String code="";
+		  String sql="";
+		  if("".equals(id)){
+			  return "";
+		  }
+		  if("1".equals(type)){
+		    sql="select workcode  as code from hrmresource where id="+id;
+		  }else if("2".equals(type)){
+			sql="select departmentcode as code from hrmdepartment where id="+id;	  
+		  }else{
+			  sql="select subcompanycode as code from hrmsubcompany where id="+id;	    
+		  }
+		  rs.executeSql(sql);
+		  if(rs.next()){
+			  code = Util.null2String(rs.getString("code"));
+		  }
+		  return code;
+	  }
 }
