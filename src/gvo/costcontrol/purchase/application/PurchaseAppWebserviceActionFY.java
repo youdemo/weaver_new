@@ -64,19 +64,19 @@ public class PurchaseAppWebserviceActionFY implements Action {
 		while (rs.next()) {
 			JSONObject jsonObjSon = new JSONObject();
 			String PROJECT = Util.null2String(rs.getString("xm"));// 项目
-			String CLASSIFYCODE = getSelectValueDetail(tableName,tableNamedt,"kmflm1",Util.null2String(rs.getString("kmflm1")));// 科目分类码
+			String CLASSIFYCODE = Util.null2String(rs.getString("kmflmnew"));// 科目分类码
 			String MATERIALNO = Util.null2String(rs.getString("wlbh"));// 物料编号
 			String MATERIALDESC = Util
 					.null2String(rs.getString("wlms"));// 物料描述
 			String PURCHASENUM = Util.null2String(rs.getString("sl"));// 采购数量
-			String UNIT = Util.null2String(rs.getString("cgdw"));// 采购单位
+			String UNIT = Util.null2String(rs.getString("jbdw"));// 采购单位
 			String OUTDATE = Util.null2String(rs.getString("jhrq"));// 交货日期
 			String MAINCPTNO = Util.null2String(rs.getString("zcbh1"));// 主资产号
 			String COSTCENTER = Util.null2String(rs.getString("cbzx"));// 成本中心
 			String EXPACCOUNT = Util.null2String(rs.getString("fykmbm"));// 费用科目
 			String PRICE = Util.null2String(rs.getString("dj"));// 预估单价
-			String CURRENCY = Util.null2String(rs.getString("bb"));// 币种
-			String PRICEUNIT = Util.null2String(rs.getString("jbdw"));// 价格单位
+			String CURRENCY = Util.null2String(rs.getString("biz"));// 币种
+			String PRICEUNIT = Util.null2String(rs.getString("jgdwnew"));// 价格单位
 			String GLANT1 = Util.null2String(rs.getString("gc"));// 工厂
 			String LOCATION = Util.null2String(rs.getString("kcdd"));// 库存地点
 			String PURGROUP = Util.null2String(rs.getString("cgz"));// 采购组
@@ -110,7 +110,7 @@ public class PurchaseAppWebserviceActionFY implements Action {
 				jsonObjSon.put("PURGROUP", PURGROUP);
 				jsonObjSon.put("MATERIALGRO", MATERIALGRO);
 				jsonObjSon.put("APPNAME", APPNAME);
-				jsonObjSon.put("REMARK", REMARK);
+				jsonObjSon.put("REMARK", "费控新采购申请流程");
 				jsonObjSon.put("INORDERNO", INORDERNO);
 				jsonObjSon.put("KEEPERNAME", KEEPERNAME);
 				jsonObjSon.put("KEEPDEPTNAME", KEEPDEPTNAME);

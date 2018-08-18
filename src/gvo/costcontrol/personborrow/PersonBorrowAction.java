@@ -32,7 +32,7 @@ public class PersonBorrowAction implements Action{
 	@Override
 	public String execute(RequestInfo info) {
 		BaseBean log = new BaseBean();
-		log.writeLog("进入多成本中心分摊流程MultCenterReimAction————————");
+		log.writeLog("进入个人借款流程PersonBorrowAction————————");
 		String requestid = info.getRequestid();// 请求ID
 		String workflowID = info.getWorkflowid();// 流程ID
 		SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
@@ -90,12 +90,11 @@ public class PersonBorrowAction implements Action{
 			log.writeLog(e);
 			log.writeLog("拼装json异常");
 		}
-		array.put(head);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		String time = sdf.format(new Date());
 		PurXmlUtil tran = new PurXmlUtil();
 		Head head1 = new Head("SAP.FI_NNYG-059_" + time, "1", "OA", "1", "userSAP", "P@ss0rd", "", "");
-		String json = tran.javaToXml(array.toString(), "", requestid, "",head1);
+		String json = tran.javaToXml(head.toString(), "", requestid, "",head1);
 		log.writeLog("json:"+json);
 		Response result=null;
 		try {

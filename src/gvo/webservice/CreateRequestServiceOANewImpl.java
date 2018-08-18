@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ibm.db2.jcc.sqlj.m;
+
 import weaver.conn.RecordSet;
 import weaver.general.Util;
 import weaver.hrm.resource.ResourceComInfo;
@@ -90,6 +92,7 @@ public class CreateRequestServiceOANewImpl {
 		String BUKRS = "";// 公司代码
 		String BUTXT = "";// 公司名称
 		String BRTWR = "";// 订单总金额
+		String WKURS = "";//汇率
 		// 明细1
 		String EBELP = "";// 项目
 		String MATNR = "";// 物料
@@ -145,6 +148,7 @@ public class CreateRequestServiceOANewImpl {
 		BUKRS = head.getString("BUKRS");
 		BUTXT = head.getString("BUTXT");
 		BRTWR = head.getString("BRTWR");
+		WKURS = head.getString("WKURS");
 		header.put("Applicant", creater);
 		header.put("sqrbh", rci.getWorkcode(creater));
 		header.put("dept", rci.getDepartmentID(creater));
@@ -159,7 +163,9 @@ public class CreateRequestServiceOANewImpl {
 		header.put("PurGroDesc", EKNAM);
 		header.put("companyCode", BUKRS);
 		header.put("companyName", BUTXT);
-		header.put("brtwr", BRTWR);
+		header.put("brtwr", getmult(BRTWR, WKURS));
+		header.put("hl", WKURS);
+		header.put("ddzjeyb", BRTWR);
 		JSONObject dts = jo.getJSONObject("DETALIS");
 		JSONArray dt1 = dts.getJSONArray("DT1");
 		JSONArray dt11 = new JSONArray();
@@ -185,7 +191,7 @@ public class CreateRequestServiceOANewImpl {
 			AFNAM = arr.getString("AFNAM");
 			INFNR = arr.getString("INFNR");
 			BANFN = arr.getString("BANFN");
-			BNFPO = arr.getString("BNFPO");
+			BNFPO = arr.getString("BNFPO").replaceAll("^(0+)", "");
 			KNTTP = arr.getString("KNTTP");
 			PSTYP = arr.getString("PSTYP");
 			SAKTO = arr.getString("SAKTO");
@@ -234,13 +240,14 @@ public class CreateRequestServiceOANewImpl {
 			node.put("KTEXT", KTEXT);//
 			node.put("TXT50", TXT50);//
 			node.put("loekz", LOEKZ);
-			node.put("brtwr", BRTWR_dt);//
+			node.put("brtwr", getmult(BRTWR_dt, WKURS));//
+			node.put("jeyb", BRTWR_dt);//
 			Map<String, String> map = getPurchaseMiddleInfo(BANFN, BNFPO);
-			node.put("cdztlx", "0");
+			node.put("cdztlx", "1");
 			node.put("fycdbm", map.get("cdbm"));
 			node.put("fykm", map.get("yskm"));
 			node.put("fyqj", map.get("qj"));
-			node.put("ysdjje", getJe(MENGE,NETPR));
+			node.put("ysdjje", getJe(MENGE,NETPR,WKURS));
 			dt11.put(node);
 		}
 		details.put("DT1", dt11);
@@ -268,6 +275,7 @@ public class CreateRequestServiceOANewImpl {
 		String BUKRS = "";// 公司代码
 		String BUTXT = "";// 公司名称
 		String BRTWR = "";// 订单总金额
+		String WKURS = "";//汇率
 		// 明细1
 		String EBELP = "";// 项目
 		String MATNR = "";// 物料
@@ -323,6 +331,7 @@ public class CreateRequestServiceOANewImpl {
 		BUKRS = head.getString("BUKRS");
 		BUTXT = head.getString("BUTXT");
 		BRTWR = head.getString("BRTWR");
+		WKURS = head.getString("WKURS");
 		header.put("Applicant", creater);
 		header.put("sqrbh", rci.getWorkcode(creater));
 		header.put("dept", rci.getDepartmentID(creater));
@@ -337,7 +346,9 @@ public class CreateRequestServiceOANewImpl {
 		header.put("PurGroDesc", EKNAM);
 		header.put("companyCode", BUKRS);
 		header.put("companyName", BUTXT);
-		header.put("brtwr", BRTWR);
+		header.put("brtwr", getmult(BRTWR, WKURS));
+		header.put("hl", WKURS);
+		header.put("ddzjeyb", BRTWR);
 		JSONObject dts = jo.getJSONObject("DETALIS");
 		JSONArray dt1 = dts.getJSONArray("DT1");
 		JSONArray dt11 = new JSONArray();
@@ -363,7 +374,7 @@ public class CreateRequestServiceOANewImpl {
 			AFNAM = arr.getString("AFNAM");
 			INFNR = arr.getString("INFNR");
 			BANFN = arr.getString("BANFN");
-			BNFPO = arr.getString("BNFPO");
+			BNFPO = arr.getString("BNFPO").replaceAll("^(0+)", "");
 			KNTTP = arr.getString("KNTTP");
 			PSTYP = arr.getString("PSTYP");
 			SAKTO = arr.getString("SAKTO");
@@ -412,13 +423,14 @@ public class CreateRequestServiceOANewImpl {
 			node.put("KTEXT", KTEXT);//
 			node.put("TXT50", TXT50);//
 			node.put("loekz", LOEKZ);
-			node.put("brtwr", BRTWR_dt);//
+			node.put("brtwr", getmult(BRTWR_dt, WKURS));//
+			node.put("jeyb", BRTWR_dt);//
 			Map<String, String> map = getPurchaseMiddleInfo(BANFN, BNFPO);
-			node.put("cdztlx", "0");
+			node.put("fycdzt", "1");
 			node.put("fycdbm", map.get("cdbm"));
 			node.put("fykm", map.get("yskm"));
 			node.put("fyqj", map.get("qj"));
-			node.put("ysdjje", BRTWR_dt);
+			node.put("ysdjje", getmult(BRTWR_dt, WKURS));
 			dt11.put(node);
 		}
 		details.put("DT1", dt11);
@@ -446,6 +458,7 @@ public class CreateRequestServiceOANewImpl {
 		String BUKRS = "";// 公司代码
 		String BUTXT = "";// 公司名称
 		String BRTWR = "";// 订单总金额
+		String WKURS = "";//汇率
 		// 明细1
 		String EBELP = "";// 项目
 		String MATNR = "";// 物料
@@ -501,6 +514,7 @@ public class CreateRequestServiceOANewImpl {
 		BUKRS = head.getString("BUKRS");
 		BUTXT = head.getString("BUTXT");
 		BRTWR = head.getString("BRTWR");
+		WKURS = head.getString("WKURS");
 		header.put("Applicant", creater);
 		header.put("sqrbh", rci.getWorkcode(creater));
 		header.put("dept", rci.getDepartmentID(creater));
@@ -515,7 +529,9 @@ public class CreateRequestServiceOANewImpl {
 		header.put("PurGroDesc", EKNAM);
 		header.put("companyCode", BUKRS);
 		header.put("companyName", BUTXT);
-		header.put("brtwr", BRTWR);
+		header.put("brtwr", getmult(BRTWR, WKURS));
+		header.put("hl", WKURS);
+		header.put("ddzjeyb", BRTWR);
 		JSONObject dts = jo.getJSONObject("DETALIS");
 		JSONArray dt1 = dts.getJSONArray("DT1");
 		JSONArray dt11 = new JSONArray();
@@ -541,7 +557,7 @@ public class CreateRequestServiceOANewImpl {
 			AFNAM = arr.getString("AFNAM");
 			INFNR = arr.getString("INFNR");
 			BANFN = arr.getString("BANFN");
-			BNFPO = arr.getString("BNFPO");
+			BNFPO = arr.getString("BNFPO").replaceAll("^(0+)", "");
 			KNTTP = arr.getString("KNTTP");
 			PSTYP = arr.getString("PSTYP");
 			SAKTO = arr.getString("SAKTO");
@@ -590,13 +606,20 @@ public class CreateRequestServiceOANewImpl {
 			node.put("KTEXT", KTEXT);//
 			node.put("TXT50", TXT50);//
 			node.put("loekz", LOEKZ);
-			node.put("brtwr", BRTWR_dt);//
+			node.put("brtwr", getmult(BRTWR_dt, WKURS));//
+			node.put("jeyb", BRTWR_dt);//
 			Map<String, String> map = getPurchaseMiddleInfo(BANFN, BNFPO);
-			node.put("cdztlx", "0");
+			node.put("cdztlx", "1");
 			node.put("fycdbm", map.get("cdbm"));
 			node.put("fykm", map.get("yskm"));
-			node.put("fyqj", map.get("qj"));
-			node.put("ysdjje", getJe(MENGE,NETPR));
+			String qj=now;
+			if(!"".equals(map.get("qj"))){
+				if(!map.get("qj").substring(0,4).equals(now.substring(0, 4))){
+					qj=map.get("qj");
+				}
+			}
+			node.put("fyqj", qj);
+			node.put("ysdjje",getJe(MENGE,NETPR,WKURS));
 			dt11.put(node);
 		}
 		details.put("DT1", dt11);
@@ -624,6 +647,7 @@ public class CreateRequestServiceOANewImpl {
 		String BUKRS = "";// 公司代码
 		String BUTXT = "";// 公司名称
 		String BRTWR = "";// 订单总金额
+		String WKURS = "";//汇率
 		// 明细1
 		String EBELP = "";// 项目
 		String MATNR = "";// 物料
@@ -679,6 +703,7 @@ public class CreateRequestServiceOANewImpl {
 		BUKRS = head.getString("BUKRS");
 		BUTXT = head.getString("BUTXT");
 		BRTWR = head.getString("BRTWR");
+		WKURS = head.getString("WKURS");
 		header.put("Applicant", creater);
 		header.put("sqrbh", rci.getWorkcode(creater));
 		header.put("dept", rci.getDepartmentID(creater));
@@ -693,7 +718,9 @@ public class CreateRequestServiceOANewImpl {
 		header.put("PurGroDesc", EKNAM);
 		header.put("companyCode", BUKRS);
 		header.put("companyName", BUTXT);
-		header.put("brtwr", BRTWR);
+		header.put("brtwr", getmult(BRTWR, WKURS));
+		header.put("hl", WKURS);
+		header.put("ddzjeyb", BRTWR);
 		JSONObject dts = jo.getJSONObject("DETALIS");
 		JSONArray dt1 = dts.getJSONArray("DT1");
 		JSONArray dt11 = new JSONArray();
@@ -719,7 +746,7 @@ public class CreateRequestServiceOANewImpl {
 			AFNAM = arr.getString("AFNAM");
 			INFNR = arr.getString("INFNR");
 			BANFN = arr.getString("BANFN");
-			BNFPO = arr.getString("BNFPO");
+			BNFPO = arr.getString("BNFPO").replaceAll("^(0+)", "");
 			KNTTP = arr.getString("KNTTP");
 			PSTYP = arr.getString("PSTYP");
 			SAKTO = arr.getString("SAKTO");
@@ -768,17 +795,25 @@ public class CreateRequestServiceOANewImpl {
 			node.put("KTEXT", KTEXT);//
 			node.put("TXT50", TXT50);//
 			node.put("loekz", LOEKZ);
-			node.put("brtwr", BRTWR_dt);//
+			node.put("brtwr", getmult(BRTWR_dt, WKURS));//
+			node.put("jeyb", BRTWR_dt);//
 			Map<String, String> map = getPurchaseMiddleInfo(BANFN, BNFPO);
 			node.put("cdztlx", "0");
 			node.put("fycdbm", map.get("cdbm"));
 			node.put("fykm", map.get("yskm"));
-			node.put("fyqj", map.get("qj"));
+			
+			String qj=now;
+			if(!"".equals(map.get("qj"))){
+				if(!map.get("qj").substring(0,4).equals(now.substring(0, 4))){
+					qj=map.get("qj");
+				}
+			}
+			node.put("fyqj", qj);
 			String type = map.get("type");
 			if("0".equals(type)){
-				node.put("ysdjje", getJe(MENGE,NETPR));
+				node.put("ysdjje", getJe(MENGE,NETPR,WKURS));
 			}else{
-				node.put("ysdjje", BRTWR_dt);
+				node.put("ysdjje", getmult(BRTWR_dt, WKURS));
 			}
 			dt11.put(node);
 		}
@@ -809,7 +844,7 @@ public class CreateRequestServiceOANewImpl {
 			AFNAM = arr.getString("AFNAM");
 			INFNR = arr.getString("INFNR");
 			BANFN = arr.getString("BANFN");
-			BNFPO = arr.getString("BNFPO");
+			BNFPO = arr.getString("BNFPO").replaceAll("^(0+)", "");
 			KNTTP = arr.getString("KNTTP");
 			PSTYP = arr.getString("PSTYP");
 			SAKTO = arr.getString("SAKTO");
@@ -858,13 +893,14 @@ public class CreateRequestServiceOANewImpl {
 			node.put("KTEXT", KTEXT);//
 			node.put("TXT50", TXT50);//
 			node.put("loekz", LOEKZ);
-			node.put("brtwr", BRTWR_dt);//
+			node.put("brtwr", getmult(BRTWR_dt, WKURS));//
+			node.put("jeyb", BRTWR_dt);//
 			Map<String, String> map = getPurchaseMiddleInfo(BANFN, BNFPO);
-			node.put("cdztlx", "0");
+			node.put("cdztlx", "1");
 			node.put("fycdbm", map.get("cdbm"));
 			node.put("fykm", map.get("yskm"));
 			node.put("fyqj", map.get("qj"));
-			node.put("ysdjje", getJe(MENGE,NETPR));
+			node.put("ysdjje", getJe(MENGE,NETPR,WKURS));
 			
 			
 			dt22.put(node);
@@ -895,10 +931,10 @@ public class CreateRequestServiceOANewImpl {
 		return map;
 	}
 	
-	public String getJe(String sl,String price){
+	public String getJe(String sl,String price,String lv){
 		RecordSet rs = new RecordSet();
 		String je="0";
-		String sql="select round(nvl("+sl+",0)*nvl("+price+",0),2) as je from dual";
+		String sql="select round(nvl('"+sl+"',0)*nvl('"+price+"',0)*nvl('"+lv+"',0),2) as je from dual";
 		rs.executeSql(sql);
 		if(rs.next()){
 			je=Util.null2String(rs.getString("je"));
@@ -906,6 +942,24 @@ public class CreateRequestServiceOANewImpl {
 		return je;
 	}
 	
+	public String getmult(String value,String hl){
+		RecordSet rs = new RecordSet();
+		String mutvalue1 = value;
+		String mutvalue2 = hl;
+		String result = "";
+		if("".equals(mutvalue1)){
+			mutvalue1 = "0";
+		}
+		if("".equals(mutvalue2)){
+			mutvalue2 = "0";
+		}
+		String sql = "select round("+mutvalue1+"*"+mutvalue2+",2) as result from dual";
+		rs.executeSql(sql);
+		if(rs.next()){
+			result = Util.null2String(rs.getString("result"));
+		}
+		return result;
+	}
 	private String getJsonStr(Map<String, String> map) {
 		JSONObject json = new JSONObject();
 		Iterator<String> it = map.keySet().iterator();

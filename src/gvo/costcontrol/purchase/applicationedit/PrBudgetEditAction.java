@@ -1,6 +1,10 @@
 package gvo.costcontrol.purchase.applicationedit;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import weaver.conn.RecordSet;
+import weaver.formmode.setup.ModeRightInfo;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
@@ -40,7 +44,7 @@ public class PrBudgetEditAction implements Action{
 		sql="select * from "+tableName+"_dt1 where mainid="+mainID;
 		rs.executeSql(sql);
 		while(rs.next()){
-			itemid = Util.null2String(rs.getString("itemid"));
+			itemid = Util.null2String(rs.getString("itemid")).replaceAll("^(0+)", "");
 			xcgje = Util.null2String(rs.getString("xcgje"));
 			if("".equals(xcgje)){
 				xcgje = "0";
@@ -57,6 +61,9 @@ public class PrBudgetEditAction implements Action{
 	
 	public void updatePrBudgetTable(String requestid,String cgsqdh,String mxhid,String ysdjje){
 		RecordSet rs = new RecordSet();
+		String modeid=getModeId("uf_pr_budget");
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		String now = sf.format(new Date());
 		String amount="0";
 		String cdbm = "";
 		String yskm = "";
@@ -79,15 +86,58 @@ public class PrBudgetEditAction implements Action{
 			gsdm = Util.null2String(rs.getString("gsdm"));
 		}
 		if(!"0".equals(amount)){
-			sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm)"
+			sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm,modedatacreatedate,modedatacreater,modedatacreatertype,formmodeid)"
 					+ " values('"+requestid+ "','"+cgsqdh+"','"+ mxhid+ "','"+ cdbm+ "','"
-					+ yskm + "','" + qj + "','" + amount + "','"+type+"','"+gsdm+"') ";
-			rs.executeSql(sql);		
+					+ yskm + "','" + qj + "','" + amount + "','"+type+"','"+gsdm+"','"+now+"','1','0','"+modeid+"') ";
+			rs.executeSql(sql);	
+			String prid="";
+			sql = "select id from uf_pr_budget where lcid='"+ requestid + "' and mxhid='"+mxhid+"' and je='"+amount+"' order by id desc ";
+			rs.executeSql(sql);
+			if (rs.next()) {
+				prid = Util.null2String(rs.getString("id"));
+			}
+			if (!"".equals(prid)) {
+				ModeRightInfo ModeRightInfo = new ModeRightInfo();
+				ModeRightInfo.editModeDataShare(
+						Integer.valueOf("1"),
+						Util.getIntValue(modeid),
+						Integer.valueOf(prid));
+			}
 		}
-		sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm)"
+		sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm,modedatacreatedate,modedatacreater,modedatacreatertype,formmodeid)"
 				+ " values('"+requestid+ "','"+cgsqdh+"','"+ mxhid+ "','"+ cdbm+ "','"
-				+ yskm + "','" + qj + "','" + ysdjje + "','"+type+"','"+gsdm+"') ";
+				+ yskm + "','" + qj + "','" + ysdjje + "','"+type+"','"+gsdm+"','"+now+"','1','0','"+modeid+"') ";
 		rs.executeSql(sql);
+		String prid="";
+		sql = "select id from uf_pr_budget where lcid='"+ requestid + "' and mxhid='"+mxhid+"' and je='"+ysdjje+"' order by id desc ";
+		rs.executeSql(sql);
+		if (rs.next()) {
+			prid = Util.null2String(rs.getString("id"));
+		}
+		if (!"".equals(prid)) {
+			ModeRightInfo ModeRightInfo = new ModeRightInfo();
+			ModeRightInfo.editModeDataShare(
+					Integer.valueOf("1"),
+					Util.getIntValue(modeid),
+					Integer.valueOf(prid));
+		}
 		
+	}
+	
+	public String getModeId(String tableName){
+		RecordSet rs = new RecordSet();
+		String formid = "";
+		String modeid = "";
+		String sql = "select id from workflow_bill where tablename='"+tableName+"'";
+		rs.executeSql(sql);
+		if(rs.next()){
+			formid = Util.null2String(rs.getString("id"));
+		}
+		sql="select id from modeinfo where  formid="+formid;
+		rs.executeSql(sql);
+		if(rs.next()){
+			modeid = Util.null2String(rs.getString("id"));
+		}
+		return modeid;
 	}
 }

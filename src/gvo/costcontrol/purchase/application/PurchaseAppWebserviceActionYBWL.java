@@ -111,7 +111,7 @@ public class PurchaseAppWebserviceActionYBWL implements Action {
 				jsonObjSon.put("PURGROUP", PURGROUP);
 				jsonObjSon.put("MATERIALGRO", MATERIALGRO);
 				jsonObjSon.put("APPNAME", APPNAME);
-				jsonObjSon.put("REMARK", REMARK);
+				jsonObjSon.put("REMARK", "费控新采购申请流程");
 				jsonObjSon.put("INORDERNO", "");
 				jsonObjSon.put("KEEPERNAME", "");
 				jsonObjSon.put("KEEPDEPTNAME", "");

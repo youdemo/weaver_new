@@ -109,7 +109,7 @@
      */
     public SAPHR_FI_0_EmCostReimbursementService_pttBindingQSServiceStub(org.apache.axis2.context.ConfigurationContext configurationContext) throws org.apache.axis2.AxisFault {
         
-                    this(configurationContext,"http://10.1.32.151:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_EC/SAP.HR_FI_0_EmCostReimbursementService_PS" );
+                    this(configurationContext,"http://10.1.32.11:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_EC/SAP.HR_FI_0_EmCostReimbursementService_PS" );
                 
     }
 
@@ -118,9 +118,9 @@
      */
     public SAPHR_FI_0_EmCostReimbursementService_pttBindingQSServiceStub() throws org.apache.axis2.AxisFault {
         
-                    this("http://10.1.32.151:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_EC/SAP.HR_FI_0_EmCostReimbursementService_PS" );
+                    this("http://10.1.32.11:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_EC/SAP.HR_FI_0_EmCostReimbursementService_PS" );
                 
-    }
+    } 
 
     /**
      * Constructor taking the target endpoint

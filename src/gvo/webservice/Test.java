@@ -73,13 +73,15 @@ public abstract class Test {
 //	}
 //销假流程	
 	public static void main(String[] args) throws Exception {
-		JSONObject jo = new JSONObject();
-		jo.put("name", "丁吉");
-		jo.put("work_code", "009118");
-		jo.put("begindate", "2018-06-06");
-		jo.put("enddate", "2018-06-06");
-		jo.put("reason", "啊原因");
-		System.out.println(jo.toString());
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		String now = sf.format(new Date());
+		String aa="2017-06-07";
+		System.out.println(aa.substring(0, 4));
+		if(aa.substring(0, 4).equals(now.substring(0, 4))){
+			System.out.println(now);
+		}else{
+			System.out.println(aa);
+		}
 
 	}
 //	public static void main(String[] args) throws Exception  {

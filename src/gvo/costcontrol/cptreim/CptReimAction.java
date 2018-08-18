@@ -47,8 +47,13 @@ public class CptReimAction implements Action{
 		String txr = "";//填写人
 		String fykmbm = "";//明细1费用科目编码
 		String zzch = "";//明细1 主资产号
-		String bcbxje1 = "";//明细1 本次报销金额
+		String bcbxe = "";//明细1 本次报销金额原币
 		String fphm = "";//明细1 发票号码
+		
+		String yflx = "";//预付类型
+		String bccxyfkje = "";//本次冲销预付款金额
+		String yfdh = "";//预付单号
+		String sap_bz = "";
 		sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = "
 				+ workflowID + ")";
 		rs.execute(sql);
@@ -73,6 +78,10 @@ public class CptReimAction implements Action{
 			sqr = Util.null2String(rs.getString("sqr"));
 			zzbs = Util.null2String(rs.getString("zzbs"));
 			txr = Util.null2String(rs.getString("txr"));
+			sap_bz = Util.null2String(rs.getString("sap_bz"));
+		}
+		if("S".equals(sap_bz)){
+			return SUCCESS;
 		}
 		try {
 			sqr = new ResourceComInfo().getLastname(sqr);
@@ -82,22 +91,22 @@ public class CptReimAction implements Action{
 			sqr = "";
 			txr = "";
 		}
-		sql="select bzdm from formtable_main_33 where id="+bz;
-		rs.executeSql(sql);
-		if(rs.next()){
-			bz = Util.null2String(rs.getString("bzdm"));
-		}
+//		sql="select bzdm from formtable_main_33 where id="+bz;
+//		rs.executeSql(sql);
+//		if(rs.next()){
+//			bz = Util.null2String(rs.getString("bzdm"));
+//		}
 		if("0".equals(sfpz)){
-			sfpz = "X";
+			sfpz = "Y";
 		}else{
-			sfpz = "N";
+			sfpz = "X";
 		}
 		sql="select * from "+tableName+"_dt1 where mainid="+mainID;
 		rs.executeSql(sql);
 		while(rs.next()){
 			fykmbm = Util.null2String(rs.getString("fykmbm"));
 			zzch = Util.null2String(rs.getString("zzch"));
-			bcbxje1 = Util.null2String(rs.getString("bcbxje1"));
+			bcbxe = Util.null2String(rs.getString("bcbxe"));
 			fphm = Util.null2String(rs.getString("fphm"));
 			JSONObject jo = new JSONObject();
 			try {
@@ -106,10 +115,10 @@ public class CptReimAction implements Action{
 				jo.put("I_HKONT",fykmbm);
 				jo.put("I_KOSTL", "");
 				jo.put("I_AUFNR", "");
-				jo.put("I_WRBTR", bcbxje1);
-				jo.put("I_ZUONR",fphm);
+				jo.put("I_WRBTR", bcbxe);
+				jo.put("I_ZUONR",bxdh);
 				jo.put("I_SGTXT", syjs);
-				jo.put("I_PERSON", txr);
+				jo.put("I_PERSON", "");
 				jo.put("I_ANLN1", zzch);
 				jo.put("I_ANLN2", "0000");
 				array1.put(jo);
@@ -118,7 +127,26 @@ public class CptReimAction implements Action{
 				log.writeLog(e);
 			}
 		}
-		
+		sql="select * from "+tableName+"_dt4 where mainid="+mainID;
+		rs.executeSql(sql);
+		while(rs.next()){
+			yflx = Util.null2String(rs.getString("yflx"));
+			bccxyfkje = Util.null2String(rs.getString("bccxyfkje"));
+			yfdh = Util.null2String(rs.getString("yfdh"));
+			JSONObject jo = new JSONObject();
+			try {
+				jo.put("BSCHL", "");
+				jo.put("UMSKZ", yflx);
+				jo.put("LIFNR","");
+				jo.put("WRBTR", bccxyfkje);
+				jo.put("ZUONR", yfdh);
+				jo.put("SGTXT", syjs);
+				array2.put(jo);
+			} catch (JSONException e) {
+				log.writeLog("array1异常");
+				log.writeLog(e);
+			}
+		}
 		try {
 			head.put("I_BUKRS",gsdm);
 			head.put("I_LIFNR",gysdm);
@@ -128,21 +156,20 @@ public class CptReimAction implements Action{
 			head.put("I_BKTXT",syjs);
 			head.put("I_XNLNR",bxdh);
 			head.put("I_TAX",sfpz);
-			head.put("I_PERSON",sqr);
-			head.put("I_UMSKZ",zzbs);
-			head.put("T_ITEM", array1);
-			head.put("T_ITEM2", array2);
+			head.put("I_PERSON","");//sqr
+			head.put("I_UMSKZ","");//zzbs
+			head.put("IT_ITEM", array1);
+			head.put("IT_ITEM2", array2);
 		} catch (JSONException e) {
 			log.writeLog("head异常");
 			log.writeLog(e);
 		}
-		array.put(head);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		String time = sdf.format(new Date());
 		PurXmlUtil tran = new PurXmlUtil();
 		SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
 		Head head1 = new Head("SAP.FI_NNYG-060_" + time, "1", "OA", "1", "userSAP", "P@ss0rd", "", "");
-		String json = tran.javaToXml(array.toString(), "", requestid, "",head1);
+		String json = tran.javaToXml(head.toString(), "", requestid, "",head1);
 		log.writeLog("json:"+json);
 		Response result = null;
 		try {
@@ -154,13 +181,20 @@ public class CptReimAction implements Action{
 		String E_MEG = "";
 		String E_BELNR = "";
 		if(result != null){
+			//log.writeLog("CptReimAction ddd:");
 			String sign = result.getSIGN();
+			//log.writeLog("CptReimAction dddaa sign"+sign);
 			String message = result.getMessage();
-			E_MEG = saxXmlUtil.getResult("E_MEG", message); 
+			//log.writeLog("CptReimAction dddaa message"+message);
+			E_MEG = saxXmlUtil.getResult("E_MSG", message); 
+			//log.writeLog("CptReimAction ddd33"+E_MEG);
 			E_BELNR = saxXmlUtil.getResult("E_BELNR", message);//凭证编号
+			//log.writeLog("CptReimAction dddddd"+E_BELNR);
 			sql="update "+tableName+" set sap_bz='"+sign+"',sap_xxms='"+E_MEG+"',sap_pzh='"+E_BELNR+"' where requestid="+requestid;
-			log.writeLog("sql:"+sql);
+			//log.writeLog("CptReimActionfff:"+sql);
 			rs.executeSql(sql);
+		}else{
+			log.writeLog("接口调用失败 result=null");
 		}
 		return SUCCESS;
 	}

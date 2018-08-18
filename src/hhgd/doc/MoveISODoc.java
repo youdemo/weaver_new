@@ -33,7 +33,7 @@ public class MoveISODoc {
 			return "OA目录编码错误";
 		}
 		RecordSet rsd = new RecordSet();
-		String sql="select distinct a.id,b.applyid,a.docname,b.ISO_NO,b.iso_ver from [10.9.2.139].WEBISO4.dbo.ConvertPDFList a,[10.9.2.139].WEBISO4.dbo.AFU_Form_ISO b where a.id=b.serialid and b.check_ok = '1'and b.newver='1' and b.type_id='"+isoSecCode+"' and a.type_id is not and b.drop_flag=0 null ";
+		String sql="select distinct a.id,b.applyid,a.docname,b.ISO_NO,b.iso_ver from [10.9.2.139].WEBISO4.dbo.ConvertPDFList a,[10.9.2.139].WEBISO4.dbo.AFU_Form_ISO b where a.id=b.serialid and b.check_ok = '1'and b.newver='1' and b.type_id='"+isoSecCode+"'  and b.drop_flag=0";
 		//log.writeLog("查询ISO文档列表sql"+sql);
 		rsd.executeSql(sql);
 		while(rsd.next()){

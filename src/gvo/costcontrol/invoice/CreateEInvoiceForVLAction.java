@@ -39,7 +39,7 @@ public class CreateEInvoiceForVLAction implements Action {
 		String bs = "";// 标识
 		String invoiceid = "";
 		String dzfp = "";
-		String modeid = "3121";
+		String modeid=getModeId("uf_e_invoice");
 		String fpid = "";
 		String sql = " Select tablename From Workflow_bill Where id in ("
 				+ " Select formid From workflow_base Where id= " + workflowID
@@ -131,9 +131,29 @@ public class CreateEInvoiceForVLAction implements Action {
 			}
 
 		}
+		if("".equals(dzfpall)){
+			dzfpall = "-1";
+		}
 		sql = "delete from uf_e_invoice where id not in(" + dzfpall
 				+ ") and xglc=" + requestid;
 		rs.executeSql(sql);
 		return SUCCESS;
+	}
+	
+	public String getModeId(String tableName){
+		RecordSet rs = new RecordSet();
+		String formid = "";
+		String modeid = "";
+		String sql = "select id from workflow_bill where tablename='"+tableName+"'";
+		rs.executeSql(sql);
+		if(rs.next()){
+			formid = Util.null2String(rs.getString("id"));
+		}
+		sql="select id from modeinfo where  formid="+formid;
+		rs.executeSql(sql);
+		if(rs.next()){
+			modeid = Util.null2String(rs.getString("id"));
+		}
+		return modeid;
 	}
 }

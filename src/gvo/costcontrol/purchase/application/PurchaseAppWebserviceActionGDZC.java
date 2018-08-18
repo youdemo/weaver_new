@@ -26,7 +26,7 @@ public class PurchaseAppWebserviceActionGDZC implements Action {
 	BaseBean log = new BaseBean();
 
 	public String execute(RequestInfo info) {
-		log.writeLog("Start PurchaseAppActionFY——————");
+		log.writeLog("Start PurchaseAppWebserviceActionGDZC——————");
 		String workflowID = info.getWorkflowid();
 		String requestid = info.getRequestid();
 		RecordSet rs = new RecordSet();
@@ -77,9 +77,9 @@ public class PurchaseAppWebserviceActionGDZC implements Action {
 			//String COSTCENTER = Util.null2String(rs.getString("cbzx"));// 成本中心
 			//String EXPACCOUNT = Util.null2String(rs.getString("fylmbm"));// 费用科目
 			String PRICE = Util.null2String(rs.getString("dj"));// 预估单价
-			String CURRENCY = Util.null2String(rs.getString("bb"));// 币种
+			String CURRENCY = Util.null2String(rs.getString("biz"));// 币种
 			String PRICEUNIT = Util.null2String(rs.getString("jgdw"));// 价格单位
-			String GLANT1 = Util.null2String(rs.getString("gc"));// 工厂
+			String GLANT1 = Util.null2String(rs.getString("gxxsgc"));// 工厂
 			String LOCATION = Util.null2String(rs.getString("kcdd"));// 库存地点
 			String PURGROUP = Util.null2String(rs.getString("cgz"));// 采购组
 			String MATERIALGRO = Util.null2String(rs.getString("wlz"));// 物料组
@@ -112,7 +112,7 @@ public class PurchaseAppWebserviceActionGDZC implements Action {
 				jsonObjSon.put("PURGROUP", PURGROUP);
 				jsonObjSon.put("MATERIALGRO", MATERIALGRO);
 				jsonObjSon.put("APPNAME", APPNAME);
-				jsonObjSon.put("REMARK", "");
+				jsonObjSon.put("REMARK", "费控新采购申请流程");
 				jsonObjSon.put("INORDERNO", INORDERNO);
 				jsonObjSon.put("KEEPERNAME", "");
 				jsonObjSon.put("KEEPDEPTNAME", "");

@@ -42,7 +42,7 @@ public class AttendanceIntegrateImpl {
 		String ryid = "";
 		Map<String, String> map = new HashMap<String, String>();
 		if("".equals(Util.null2String(loginid))||"".equals(Util.null2String(password))){
-			map.put("result", "fail");
+			map.put("result", "E");
 			map.put("workcode", "");
 			map.put("name", "");
 			map.put("checkno", "");
@@ -55,7 +55,7 @@ public class AttendanceIntegrateImpl {
 			count = rs.getInt("count");
 		}
 		if(count <=0){
-			map.put("result", "fail");
+			map.put("result", "E");
 			map.put("workcode", "");
 			map.put("name", "");
 			map.put("checkno", "");
@@ -78,7 +78,7 @@ public class AttendanceIntegrateImpl {
             	ispass = lu.authentic(loginid,password);
             }
             if(!ispass){
-            	map.put("result", "fail");
+            	map.put("result", "E");
     			map.put("workcode", "");
     			map.put("name", "");
     			map.put("checkno", "");
@@ -92,7 +92,7 @@ public class AttendanceIntegrateImpl {
 				count = rs.getInt("count");
 			}
 			if(count <=0){
-				map.put("result", "fail");
+				map.put("result", "E");
 				map.put("workcode", "");
 				map.put("name", "");
 				map.put("checkno", "");
@@ -123,7 +123,7 @@ public class AttendanceIntegrateImpl {
 			rs.executeSql(sql);
 		}
 		
-		map.put("result", "success");
+		map.put("result", "S");
 		map.put("workcode", workcode);
 		map.put("name", lastname);
 		map.put("checkno", checkno);
@@ -137,7 +137,7 @@ public class AttendanceIntegrateImpl {
 		JSONObject json = new JSONObject();
 		JSONArray ja = new JSONArray();
 		if("".equals(name)){
-			json.put("result", "success");
+			json.put("result", "S");
 			json.put("items", ja);
 			json.put("context", "姓名不能为空");
 			return json.toString();
@@ -152,7 +152,7 @@ public class AttendanceIntegrateImpl {
 			jo.put("name", Util.null2String(rs.getString("lastname")));
 			ja.put(jo);
 		}
-		json.put("result", "success");
+		json.put("result", "S");
 		json.put("items", ja);
 		json.put("context", "");
 		return json.toString();
@@ -165,7 +165,7 @@ public class AttendanceIntegrateImpl {
 		JSONObject json = new JSONObject();
 		JSONArray ja = new JSONArray();
 		if("".equals(workcode)){
-			json.put("result", "success");
+			json.put("result", "S");
 			json.put("items", ja);
 			json.put("context", "工号不能为空");
 			return json.toString();
@@ -176,7 +176,7 @@ public class AttendanceIntegrateImpl {
 			managerid = Util.null2String(rs.getString("id"));
 		}
 		if("".equals(managerid)){
-			json.put("result", "success");
+			json.put("result", "S");
 			json.put("items", ja);
 			json.put("context", "人员编号无法匹配");
 			return json.toString();
@@ -189,7 +189,7 @@ public class AttendanceIntegrateImpl {
 			jo.put("name", Util.null2String(rs.getString("lastname")));
 			ja.put(jo);
 		}
-		json.put("result", "success");
+		json.put("result", "S");
 		json.put("items", ja);
 		json.put("context", "");
 		return json.toString();
@@ -205,7 +205,7 @@ public class AttendanceIntegrateImpl {
 		int count = 0;
 		Map<String, String> retMap = new HashMap<String, String>();
 		if("".equals(workcode)||"".equals(holidayType)||"".equals(date)||"".equals(checkno)){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "接口参数不能为空");
 			return getJsonStr(retMap);
@@ -216,7 +216,7 @@ public class AttendanceIntegrateImpl {
 			sqr = Util.null2String(rs.getString("id"));
 		}
 		if("".equals(sqr)){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "人员编号无法匹配");
 			return getJsonStr(retMap);
@@ -227,7 +227,7 @@ public class AttendanceIntegrateImpl {
 			count = rs.getInt("count");
 		}
 		if(count <=0){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "该用户登录校验不正确");
 			return getJsonStr(retMap);
@@ -237,7 +237,7 @@ public class AttendanceIntegrateImpl {
 		try {
 			year=sf.format(sf.parse(date));
 		} catch (ParseException e) {
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "日期参数格式异常");
 			return getJsonStr(retMap);
@@ -259,7 +259,7 @@ public class AttendanceIntegrateImpl {
 		if(rs.next()){
 			hours=Util.null2String(rs.getString("hours"));
 		}
-		retMap.put("result", "success");
+		retMap.put("result", "S");
 		retMap.put("time", hours);
 		retMap.put("context", "");
 		return getJsonStr(retMap);
@@ -329,16 +329,16 @@ public class AttendanceIntegrateImpl {
 			return getJsonStr(retMap);
 		}
 		String jsonstr = "";
-		if("HR-037".equals(workflowType)){
+		if("HR-017".equals(workflowType)){//未打卡流程
 			try {
-				jsonstr=getHR037Json(creater,dataInfo);
+				jsonstr=getHR017Json(creater,dataInfo);
 			} catch (Exception e) {
 				retMap.put("MSG_TYPE", "E");
 				retMap.put("MSG_CONTENT", "JSON格式转换异常");
 				retMap.put("OA_ID", "0");	
 				return getJsonStr(retMap);
 			}
-		}else if("HR-012".equals(workflowType)){
+		}else if("HR-012".equals(workflowType)){//加班
 			
 			try {
 				int countnum=0;
@@ -382,26 +382,26 @@ public class AttendanceIntegrateImpl {
 						return getJsonStr(retMap);
 					}
 				}
-				jsonstr=getHR040Json(creater,dataInfo);
+				jsonstr=getHR012Json(creater,dataInfo);
 			} catch (Exception e) {
 				retMap.put("MSG_TYPE", "E");
 				retMap.put("MSG_CONTENT", "JSON格式转换异常");
 				retMap.put("OA_ID", "0");	
 				return getJsonStr(retMap);
 			}
-		}else if("HR-010".equals(workflowType)){
+		}else if("HR-010".equals(workflowType)){//请假
 			try {
 				
-				jsonstr=getHR041Json(creater,dataInfo);
+				jsonstr=getHR010Json(creater,dataInfo);
 			} catch (Exception e) {
 				retMap.put("MSG_TYPE", "E");
 				retMap.put("MSG_CONTENT", "JSON格式转换异常");
 				retMap.put("OA_ID", "0");	
 				return getJsonStr(retMap);
 			}
-		}else if("HR-042".equals(workflowType)){
+		}else if("HR-023".equals(workflowType)){//销假
 			try {
-				jsonstr=getHR042Json(creater,dataInfo);
+				jsonstr=getHR023Json(creater,dataInfo);
 			} catch (Exception e) {
 				retMap.put("MSG_TYPE", "E");
 				retMap.put("MSG_CONTENT", "JSON格式转换异常");
@@ -424,7 +424,7 @@ public class AttendanceIntegrateImpl {
 	 * @throws Exception 
 
 	 */
-	public String getHR037Json(String creater,String datainfo) throws Exception{
+	public String getHR017Json(String creater,String datainfo) throws Exception{
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 		ResourceComInfo rci = new ResourceComInfo();
 		String nowdate = sf.format(new Date());
@@ -492,7 +492,7 @@ public class AttendanceIntegrateImpl {
 	   加班转换 0 转支付 1 转调休 加班方式 0 正常加班 1公出加班 2 出差加班
 	 * @throws Exception 
 	 */
-	public String getHR040Json(String creater,String datainfo) throws Exception{
+	public String getHR012Json(String creater,String datainfo) throws Exception{
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 		ResourceComInfo rci = new ResourceComInfo();
 		String nowdate = sf.format(new Date());
@@ -572,7 +572,7 @@ public class AttendanceIntegrateImpl {
 	 * @param datainfo {"endtime":"请假结束时间","remain_hours":"假期余额","reason":"请假事由","begintime":"请假开始时间","hours":"请假时数","absence_type":"请假类别","agent":"代理人工号","used_hours":"已用时数","name":"姓名","work_code":"工号","begindate":"请假开始日期","enddate":"请假结束日期","place":"出差地点","on_hours":"在途时数"}
 	 * @throws Exception 
 	 */
-	public String getHR041Json(String creater,String datainfo) throws Exception{
+	public String getHR010Json(String creater,String datainfo) throws Exception{
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 		ResourceComInfo rci = new ResourceComInfo();
 		String nowdate = sf.format(new Date());
@@ -647,7 +647,7 @@ public class AttendanceIntegrateImpl {
 	 * @param datainfo
 	 * @throws Exception 
 	 */
-	public String getHR042Json(String creater,String datainfo) throws Exception{
+	public String getHR023Json(String creater,String datainfo) throws Exception{
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 		ResourceComInfo rci = new ResourceComInfo();
 		String nowdate = sf.format(new Date());
@@ -698,7 +698,7 @@ public class AttendanceIntegrateImpl {
 		JSONObject json = new JSONObject();
 		JSONArray ja = new JSONArray();
 		if("".equals(workflowType)||"".equals(workcode)||"".equals(checkno)){
-			json.put("result", "fail");
+			json.put("result", "E");
 			json.put("items", ja);
 			json.put("context","接口参数不能为空");
 			return json.toString();
@@ -709,7 +709,7 @@ public class AttendanceIntegrateImpl {
 			workflowid = Util.null2String(rs.getString("wfid"));
 		}
 		if("".equals(workflowid)){
-			json.put("result", "fail");
+			json.put("result", "E");
 			json.put("items", ja);
 			json.put("context","流程类型无法匹配");
 			return json.toString();
@@ -727,7 +727,7 @@ public class AttendanceIntegrateImpl {
 			creater = Util.null2String(rs.getString("id"));
 		}
 		if("".equals(creater)){
-			json.put("result", "fail");
+			json.put("result", "E");
 			json.put("items", ja);
 			json.put("context","人员编号无法匹配");
 			return json.toString();
@@ -738,7 +738,7 @@ public class AttendanceIntegrateImpl {
 			count = rs.getInt("count");
 		}
 		if(count <=0){
-			json.put("result", "fail");
+			json.put("result", "E");
 			json.put("items", ja);
 			json.put("context","该用户登录校验不正确");
 			return json.toString();
@@ -761,7 +761,7 @@ public class AttendanceIntegrateImpl {
 	 * @param workflowid 流程id
 	 * @param creater 创建人
 	 * @param num 次数
-	 * @return {"result":"success","items":[{"card_place":"昆山","status":"审批中","Nocard_type":"补下班卡","Break_date":"2018-06-06","repaircard_time":"18:00","Nocard_Reason":"忘打卡"},{"card_place":"昆山","status":"审批中","Nocard_type":"补上班卡","Break_date":"2018-06-06","repaircard_time":"08:00","Nocard_Reason":"忘打卡"}],"context":""}
+	 * @return {"result":"S","items":[{"card_place":"昆山","status":"审批中","Nocard_type":"补下班卡","Break_date":"2018-06-06","repaircard_time":"18:00","Nocard_Reason":"忘打卡"},{"card_place":"昆山","status":"审批中","Nocard_type":"补上班卡","Break_date":"2018-06-06","repaircard_time":"08:00","Nocard_Reason":"忘打卡"}],"context":""}
 	 * @throws Exception {"card_place":"地点","status":"审批中","Nocard_type":"未打卡类型","Break_date":"违反考勤日期","repaircard_time":"补卡时间","Nocard_Reason":"未打卡原因"}
 	 */
 	public String getOldRequestHR037(String tablename,String workflowid,String creater,int num) throws Exception{
@@ -801,7 +801,7 @@ public class AttendanceIntegrateImpl {
 			}
 			ja.put(jo);
 		}
-		json.put("result", "success");
+		json.put("result", "S");
 		json.put("items", ja);
 		json.put("context","");
 		
@@ -815,7 +815,7 @@ public class AttendanceIntegrateImpl {
 	 * @param workflowid 流程id
 	 * @param creater 创建人
 	 * @param num 次数
-	 * @return {"result":"success","items":[{"endtime":"13:00","apply_data":"2018-06-06","status":"审批中","cday":"2018-06-06","overtime_way":"正常加班","begintime":"11:00","hours":"2","overtime_type":"平时加班转调休","enddate":"2018-06-06","begindate":"2018-06-06"},{"endtime":"18:40","apply_data":"2018-06-05","status":"审批中","cday":"2018-06-05","overtime_way":"正常加班","begintime":"18:00","hours":"2","overtime_type":"法定节假日转支付","enddate":"2018-06-05","begindate":"2018-06-05"}],"context":""}
+	 * @return {"result":"S","items":[{"endtime":"13:00","apply_data":"2018-06-06","status":"审批中","cday":"2018-06-06","overtime_way":"正常加班","begintime":"11:00","hours":"2","overtime_type":"平时加班转调休","enddate":"2018-06-06","begindate":"2018-06-06"},{"endtime":"18:40","apply_data":"2018-06-05","status":"审批中","cday":"2018-06-05","overtime_way":"正常加班","begintime":"18:00","hours":"2","overtime_type":"法定节假日转支付","enddate":"2018-06-05","begindate":"2018-06-05"}],"context":""}
 	 * @throws Exception {"endtime":"结束时间","apply_data":"申请日期","status":"审批中","cday":"归属日期","overtime_way":"加班方式","begintime":"开始时间","hours":"时长","overtime_type":"加班日期","enddate":"结束日期","begindate":"开始日期"}
 	 */
 	public String getOldRequestHR040(String tablename,String workflowid,String creater,int num) throws Exception{
@@ -868,7 +868,7 @@ public class AttendanceIntegrateImpl {
 			}
 			ja.put(jo);
 		}
-		json.put("result", "success");
+		json.put("result", "S");
 		json.put("items", ja);
 		json.put("context","");
 		return json.toString();
@@ -879,7 +879,7 @@ public class AttendanceIntegrateImpl {
 	 * @param workflowid 流程id
 	 * @param creater 创建人
 	 * @param num 次数
-	 * @return {"result":"success","items":[{"endtime":"17:30","apply_data":"","status":"审批中","hours":"8","begintime":"08:30","absence_type":"公假","enddate":"2019-06-06","begindate":"2019-06-06"},{"endtime":"17:30","apply_data":"","status":"审批中","hours":"8","begintime":"08:30","absence_type":"公假","enddate":"2019-06-06","begindate":"2019-06-06"}],"context":""}
+	 * @return {"result":"S","items":[{"endtime":"17:30","apply_data":"","status":"审批中","hours":"8","begintime":"08:30","absence_type":"公假","enddate":"2019-06-06","begindate":"2019-06-06"},{"endtime":"17:30","apply_data":"","status":"审批中","hours":"8","begintime":"08:30","absence_type":"公假","enddate":"2019-06-06","begindate":"2019-06-06"}],"context":""}
 	 * @throws Exception {"endtime":"请假结束时间","apply_data":"申请日期","status":"审批中","hours":"请假时长","begintime":"开始时间","absence_type":"请假类别","enddate":"结束日期","begindate":"开始日期"}
 	 */
 	public String getOldRequestHR041(String tablename,String workflowid,String creater,int num) throws Exception{
@@ -919,7 +919,7 @@ public class AttendanceIntegrateImpl {
 			}
 			ja.put(jo);
 		}
-		json.put("result", "success");
+		json.put("result", "S");
 		json.put("items", ja);
 		json.put("context","");
 		return json.toString();
@@ -930,7 +930,7 @@ public class AttendanceIntegrateImpl {
 	 * @param workflowid 流程id
 	 * @param creater 创建人
 	 * @param num 次数
-	 * @return {"result":"success","items":[{"status":"审批中","apply_date":"2018-06-05","enddate":"2018-06-06","begindate":"2018-06-06"}],"context":""}
+	 * @return {"result":"S","items":[{"status":"审批中","apply_date":"2018-06-05","enddate":"2018-06-06","begindate":"2018-06-06"}],"context":""}
 	 * @throws Exception {"status":"审批中","apply_date":"申请日期","enddate":"销假结束日期","begindate":"销假开始日期"}
 	 */
 	public String getOldRequestHR042(String tablename,String workflowid,String creater,int num) throws Exception{
@@ -968,7 +968,7 @@ public class AttendanceIntegrateImpl {
 			}
 			ja.put(jo);
 		}
-		json.put("result", "success");
+		json.put("result", "S");
 		json.put("items", ja);
 		json.put("context","");
 		
@@ -1036,7 +1036,7 @@ public class AttendanceIntegrateImpl {
 		int count = 0;
 		Map<String, String> retMap = new HashMap<String, String>();
 		if("".equals(date)||"".equals(workcode)||"".equals(checkno)){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "接口参数不能为空");
 			return getJsonStr(retMap);
@@ -1047,7 +1047,7 @@ public class AttendanceIntegrateImpl {
 			sqr = Util.null2String(rs.getString("id"));
 		}
 		if("".equals(sqr)){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "人员编号无法匹配");
 			return getJsonStr(retMap);
@@ -1058,7 +1058,7 @@ public class AttendanceIntegrateImpl {
 			count = rs.getInt("count");
 		}
 		if(count <=0){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "该用户登录校验不正确");
 			return getJsonStr(retMap);
@@ -1081,7 +1081,7 @@ public class AttendanceIntegrateImpl {
 		try {
 			month=sf.format(sf.parse(date));
 		} catch (ParseException e) {
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "日期参数格式异常");
 			return getJsonStr(retMap);
@@ -1095,7 +1095,7 @@ public class AttendanceIntegrateImpl {
 			enddate = Util.null2String(rs.getString("enddate"));
 		}
 		if("".equals(startdate)||"".equals(enddate)){
-			retMap.put("result", "fail");
+			retMap.put("result", "E");
 			retMap.put("time", "0");
 			retMap.put("context", "日期参数格式异常");
 			return getJsonStr(retMap);
@@ -1116,7 +1116,7 @@ public class AttendanceIntegrateImpl {
 		if("".equals(hours)){
 			hours = "0";
 		}
-		retMap.put("result", "success");
+		retMap.put("result", "S");
 		retMap.put("time",hours);
 		retMap.put("context", "");
 		return getJsonStr(retMap);

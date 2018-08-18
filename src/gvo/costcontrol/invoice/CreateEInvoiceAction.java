@@ -37,7 +37,7 @@ public class CreateEInvoiceAction  implements Action{
 		String dzfp="";
 		String dzfpall="-1";
 		String flag=",";
-		String modeid="3121";
+		String modeid=getModeId("uf_e_invoice");
 		String fpid="";
 		String sql = " Select tablename From Workflow_bill Where id in ("
 				+ " Select formid From workflow_base Where id= " + workflowID
@@ -116,5 +116,22 @@ public class CreateEInvoiceAction  implements Action{
 		sql="delete from uf_e_invoice where  xglc='"+requestid+"' and id not in("+dzfpall+")";
 		rs.executeSql(sql);
 		return SUCCESS;
+	}
+	
+	public String getModeId(String tableName){
+		RecordSet rs = new RecordSet();
+		String formid = "";
+		String modeid = "";
+		String sql = "select id from workflow_bill where tablename='"+tableName+"'";
+		rs.executeSql(sql);
+		if(rs.next()){
+			formid = Util.null2String(rs.getString("id"));
+		}
+		sql="select id from modeinfo where  formid="+formid;
+		rs.executeSql(sql);
+		if(rs.next()){
+			modeid = Util.null2String(rs.getString("id"));
+		}
+		return modeid;
 	}
 }

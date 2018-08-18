@@ -91,17 +91,22 @@ public class SendRemindMail implements Action{
 			Trainer = Util.null2String(rs.getString("Trainer"));
 			Comments = Util.null2String(rs.getString("Comments"));
 		}
+		
 		docids=Trainingmaterial;
 		sql="select TrainingType from uf_YHDQD where id="+Trainingtype;
 		rs.executeSql(sql);
 		if(rs.next()){
 			Trainingtype = Util.null2String(rs.getString("TrainingType"));
 		}
-		sql="select CourseList from uf_CourseList where id="+Courselist;
-		rs.executeSql(sql);
-		if(rs.next()){
-			Courselist = Util.null2String(rs.getString("CourseList"));
-		}
+//		sql="select CourseList from uf_CourseList where id="+Courselist;
+//		rs.executeSql(sql);
+//		if(rs.next()){
+//			Courselist = Util.null2String(rs.getString("CourseList"));
+//		}
+		//String Courselist7=Courselist.substring(Courselist.indexOf("`~`7")+4, Courselist.indexOf("`~`8"));
+		//String Courselist8=Courselist.substring(Courselist.indexOf("`~`8")+4, Courselist.indexOf("`~`~"));
+		String Trainingtype7=Trainingtype.substring(Trainingtype.indexOf("`~`7")+4, Trainingtype.indexOf("`~`8"));
+		String Trainingtype8=Trainingtype.substring(Trainingtype.indexOf("`~`8")+4, Trainingtype.indexOf("`~`~"));
 		String subject = "E.G.O.China培训人员报备通知  E.G.O.China Trainee Training Notice";
 		StringBuffer body = new StringBuffer();
 		body.append("Hello All,<br>");
@@ -140,7 +145,7 @@ public class SendRemindMail implements Action{
 			
 		}
 		body.append("</table>");
-		body.append("    培训类别：");body.append(Trainingtype);body.append("<br>");
+		body.append("    培训类别：");body.append(Trainingtype7);body.append("<br>");
 		body.append("    培训起止时间： ");body.append(startdate+" "+shi1+"~"+finishdate+" "+shi2);body.append("<br>");
 		body.append("    培训地点：");body.append(PXDD);body.append("<br>");
 		body.append("    联系人：");body.append(PXLXR);body.append("<br>");
@@ -173,13 +178,13 @@ public class SendRemindMail implements Action{
 				
 			}
 			body.append("<tr>"); 
-			body.append("	<td style=\"text-align:left;\">");body.append("20000"); body.append("</td>");
-			body.append("	<td style=\"text-align:left;\">");body.append("张三"); body.append("</td>");
-			body.append("	<td style=\"text-align:left;\">");body.append("开发"); body.append("</td>");
+			body.append("	<td style=\"text-align:left;\">");body.append(GH); body.append("</td>");
+			body.append("	<td style=\"text-align:left;\">");body.append(personname); body.append("</td>");
+			body.append("	<td style=\"text-align:left;\">");body.append(departmentname); body.append("</td>");
 			body.append("</tr>");
 		}	
 		body.append("</table>");
-		body.append("    Training type: ");body.append(Trainingtype);body.append("<br>");
+		body.append("    Training type: ");body.append(Trainingtype8);body.append("<br>");
 		body.append("    Training start time and finish time: ");body.append(startdate+" "+shi1+"~"+finishdate+" "+shi2);body.append("<br>");
 		body.append("    Training center: ");body.append(PXDD);body.append("<br>");
 		body.append("    Contact Person: ");body.append(PXLXR);body.append("<br>");

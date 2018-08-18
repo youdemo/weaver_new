@@ -42,7 +42,7 @@ public class TravelReimAction  implements Action {
 		String REQNAME = "";// 经办人姓名
 		String cbzxbm = "";
 		String yfxmbh = "";//研发项目编号
-		String VOUCHERTYPE = "ZE";// 凭证类型
+		String VOUCHERTYPE = "KR";// 凭证类型
 		String VOUCHERSPUN = "X";// 是否抛转
 
 		sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = "
@@ -118,7 +118,7 @@ public class TravelReimAction  implements Action {
 		rs.execute(sql);
 		while (rs.next()) {
 			JSONObject json2 = new JSONObject();
-			String ACCOUNTCODE = "31";// 记账代码
+			String ACCOUNTCODE = "39";// 记账代码
 			String GENERALACCOUNT = "";// 特殊总帐标识
 			String PAYAMT = Util.null2String(rs.getString("payamt"));// 本次冲销金额
 			String LWFLOWNO = Util.null2String(rs.getString("lwflowno"));// 借款单号

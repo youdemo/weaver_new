@@ -21,7 +21,7 @@ public class InsertJDEForTransfer implements Action{
 		RecordSet rs = new RecordSet();
 		BaseBean log = new BaseBean();
 		log.writeLog("start InsertJDEForTransfer");
-		RecordSetDataSource rsd = new RecordSetDataSource("JDEpy");
+		RecordSetDataSource rsd = new RecordSetDataSource("JDEtran1");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		String nowtime = sdf.format(new Date());
 		String tableName = "";
@@ -60,10 +60,10 @@ public class InsertJDEForTransfer implements Action{
 		sql="select * from "+tableName+"_dt1 where mainid="+mainId;
 		rs.executeSql(sql);
 		while(rs.next()){
-			fxemal=fxemal+Util.null2String(rs.getString("AssetNumber"))+";'||chr(13)||chr(10)||'  　";
-			fxa311=fxa311+Util.null2String(getSelectValueDetail(tableName,tableName+"_dt1","NewFloor",rs.getString("NewFloor")))+";'||chr(13)||chr(10)||'  　";
-			fxa312=fxa312+Util.null2String(rs.getString("NewLocation"))+";'||chr(13)||chr(10)||'  　";
-			fxfil3=fxfil3+Util.null2String(rs.getString("StaffNO"))+";'||chr(13)||chr(10)||'  　";
+			fxemal=fxemal+Util.null2String(rs.getString("AssetNumber"))+";'||chr(13)||chr(10)||'  ";
+			fxa311=fxa311+Util.null2String(getSelectValueDetail(tableName,tableName+"_dt1","newfloors",rs.getString("newfloors")))+";'||chr(13)||chr(10)||'  ";
+			fxa312=fxa312+Util.null2String(rs.getString("NewLocation"))+";'||chr(13)||chr(10)||'  ";
+			fxfil3=fxfil3+Util.null2String(rs.getString("StaffNO"))+";'||chr(13)||chr(10)||'  ";
 		}
 		fxemal=fxemal+"0";
 		fxa311=fxa311+"0";
@@ -78,16 +78,19 @@ public class InsertJDEForTransfer implements Action{
 			fxgptn = Util.null2String(rs.getString("fxgptn"));
 		}
 		
-		sql="select nvl(max(fxccid),0)+1 as fxccid from F5912001";
+		sql="select nvl(max(fxccid),0)+1 as fxccid from proddta.F5912001";
 		rsd.executeSql(sql);
 		if(rsd.next()){
 			fxccid = Util.null2String(rsd.getString("fxccid"));
 		}
 	
-		sql="insert into F5912001(fxadd0,fxccid,fxemal,fxa311,fxa312,fxfil3,fxgptn,fxmcu,fxfy,fxpn,fxtody,fxev01,fxev02) " +
+		sql="insert into proddta.F5912001(fxadd0,fxccid,fxemal,fxa311,fxa312,fxfil3,fxgptn,fxmcu,fxfy,fxpn,fxtody,fxev01,fxev02) " +
 				"values('"+fxadd0+"','"+fxccid+"','"+fxemal+"','"+fxa311+"','"+fxa312+"','"+fxfil3+"','"+fxgptn+"','"+fxmcu+"','"+fxfy+"','"+fxpn+"','"+fxtody+"',' ',' ')";
 		log.writeLog("insert sql:"+sql);
 		rsd.executeSql(sql);
+		
+		sql="update "+tableName+" set idnumber='"+fxccid+"' where requestid="+requestid;
+		rs.executeSql(sql);
 		return SUCCESS;
 	}
 	public String getSelectValueDetail(String mainTable,String detailTable,String filedname,String selectvalue){

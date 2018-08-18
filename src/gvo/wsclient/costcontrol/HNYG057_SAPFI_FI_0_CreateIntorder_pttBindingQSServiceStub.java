@@ -109,7 +109,7 @@
      */
     public HNYG057_SAPFI_FI_0_CreateIntorder_pttBindingQSServiceStub(org.apache.axis2.context.ConfigurationContext configurationContext) throws org.apache.axis2.AxisFault {
         
-                    this(configurationContext,"http://10.1.32.151:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_OA/HNYG-057_SAP.FI_FI_0_CreateIntorder_PS" );
+                    this(configurationContext,"http://10.1.32.11:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_OA/HNYG-057_SAP.FI_FI_0_CreateIntorder_PS" );
                 
     }
 
@@ -118,7 +118,7 @@
      */
     public HNYG057_SAPFI_FI_0_CreateIntorder_pttBindingQSServiceStub() throws org.apache.axis2.AxisFault {
         
-                    this("http://10.1.32.151:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_OA/HNYG-057_SAP.FI_FI_0_CreateIntorder_PS" );
+                    this("http://10.1.32.11:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_OA/HNYG-057_SAP.FI_FI_0_CreateIntorder_PS" );
                 
     }
 
@@ -288,7 +288,7 @@
         }
         return false;
     }
-     //http://10.1.32.151:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_OA/HNYG-057_SAP.FI_FI_0_CreateIntorder_PS
+     //http://10.1.32.11:8010/WP_HNYG/APP_SAP_SERVICE/Proxy_Services/TA_OA/HNYG-057_SAP.FI_FI_0_CreateIntorder_PS
         public static class ErrorType
         implements org.apache.axis2.databinding.ADBBean{
         /* This type was generated from the piece of schema that had

@@ -162,6 +162,26 @@ public class CreateCertificate {
 			fkfsname = Util.null2String(rs.getString("fkfsname"));
 			bm = Util.null2String(rs.getString("bm"));
 		}
+		if("".equals(bm)){
+			bm=" ";
+		}
+		Map<String, String> mapStr = new HashMap<String, String>();
+		mapStr.put("STATUS", "NEW");
+		mapStr.put("SET_OF_BOOKS_ID", bookid);
+		mapStr.put("ACCOUNTING_DATE", "to_date('"+now+"','dd-mm-yyyy')");
+		mapStr.put("CURRENCY_CODE", bz);
+		mapStr.put("DATE_CREATED","to_date('"+now+"','dd-mm-yyyy')");
+		mapStr.put("CREATED_BY", "1069");
+		mapStr.put("ACTUAL_FLAG","A");
+		mapStr.put("USER_JE_CATEGORY_NAME", "Other");
+		mapStr.put("USER_JE_SOURCE_NAME", "Manual");
+		mapStr.put("SEGMENT1", SEGMENT1);//
+		mapStr.put("SEGMENT2", "0000");//项目码
+		mapStr.put("SEGMENT3", "000");//地区码
+		mapStr.put("SEGMENT4", "0000");//部门码
+		mapStr.put("REFERENCE1","OA"+pch);
+		mapStr.put("REFERENCE4","OA"+pch);
+		mapStr.put("SEGMENT5", bm);//科目
 		sql="select requestid from request_fk_record where fkseq in(select fkseq from request_fk_record where requestid='"+rqid+"' ) order by seq asc";
 	
 		rs.executeSql(sql);
@@ -176,8 +196,7 @@ public class CreateCertificate {
 			}
 			if("60".equals(workflowId)){	//出差报销			
 				Map<String, String> result= new DoTRImpl().doTravelReimbursement(tableName,requestId,bookid,pch,now,SEGMENT1);
-				rmb=iu.add(rmb, result.get("rmb"));
-				wb=iu.add(wb, result.get("wb"));
+			
 				if("".equals(bz)){
 					sql_dt="select * from "+tableName+" where requestid="+requestId;
 					rs_dt.executeSql(sql_dt);
@@ -186,6 +205,8 @@ public class CreateCertificate {
 					}
 				}
 				if(rqcount == 1){
+					rmb=iu.add(rmb, result.get("rmb"));
+					wb=iu.add(wb, result.get("wb"));
 					sql_dt="select * from "+tableName+" where requestid="+requestId;
 					rs_dt.executeSql(sql_dt);
 					if(rs_dt.next()){
@@ -226,6 +247,103 @@ public class CreateCertificate {
 						pzsm=dfr+" 核销    "+rq1+"~"+rq2+" "+bxsm+" "+"差旅费";
 						pzsm2=dfr+" 出差报销";
 					}
+				}else{
+					
+					sql_dt="select * from "+tableName+" where requestid="+requestId;
+					rs_dt.executeSql(sql_dt);
+					if(rs_dt.next()){
+						ccmdd = Util.null2String(rs_dt.getString("ccmdd"));
+						bxsm = Util.null2String(rs_dt.getString("bxsm"));
+						rq1 = Util.null2String(rs_dt.getString("rq1"));
+						rq2 = Util.null2String(rs_dt.getString("rq2"));
+						yzzje = Util.null2String(rs_dt.getString("yzzje"));
+						bxje = Util.null2String(rs_dt.getString("bxje"));
+						bt = Util.null2String(rs_dt.getString("bt"));
+						lv = Util.null2String(rs_dt.getString("lv"));
+						dfkm_bx = Util.null2String(rs_dt.getString("dfkm"));
+					}
+					if("".equals(yzzje)){
+						yzzje = "0";
+					}
+					if("".equals(bxje)){
+						bxje = "0";
+					}
+					if("".equals(bt)){
+						bt = "0";
+					}
+					if("".equals(lv)){
+						lv = "1";
+					}
+					yzzje_hl=iu.mul(yzzje, lv);
+					bxje_hl=iu.mul(bxje, lv);
+					bt_hl=iu.mul(bt, lv);
+					if(Util.getFloatValue(yzzje)==Util.getFloatValue("0")){
+						rmb=iu.add(rmb, result.get("rmb"));
+						wb=iu.add(wb, result.get("wb"));
+					}else if(Util.getFloatValue(bxje)==Util.getFloatValue(yzzje)){
+						type="0";
+						pzsm=dfr+" 核销    "+rq1+"~"+rq2+" "+bxsm+" "+"差旅费";
+						mapStr.put("interface_seq", getInterfaceSeq());
+						mapStr.put("CURRENCY_CODE", bz);
+						mapStr.put("ENTERED_CR", getMoney(bxje));
+						if("USD".equals(bz)){
+						mapStr.put("ACCOUNTED_CR", getMoney(bxje_hl));
+						}
+						mapStr.put("SEGMENT5", dfkm_bx);
+						mapStr.put("REFERENCE2", pzsm);
+						mapStr.put("REFERENCE5", pzsm);
+						mapStr.put("REFERENCE10",pzsm);	
+
+						mapStr.put("REFERENCE30", interfaceseq+"");
+						 interfaceseq= interfaceseq+10;
+						mapStr.put("GROUP_ID",pch);
+						iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
+						
+					}else if(Util.getFloatValue(bxje)>Util.getFloatValue(yzzje)){
+						type="1";
+						pzsm=dfr+" 核销    "+rq1+"~"+rq2+" "+bxsm+" "+"差旅费";
+						pzsm2=dfr+" 出差报销";
+						mapStr.put("interface_seq", getInterfaceSeq());
+						mapStr.put("CURRENCY_CODE", bz);
+						mapStr.put("ENTERED_CR", getMoney(yzzje));
+						if("USD".equals(bz)){
+						mapStr.put("ACCOUNTED_CR", getMoney(yzzje_hl));
+						}
+						mapStr.put("SEGMENT5", dfkm_bx);
+						mapStr.put("REFERENCE2", pzsm);
+						mapStr.put("REFERENCE5", pzsm);
+						mapStr.put("REFERENCE10",pzsm);	
+
+						mapStr.put("REFERENCE30", interfaceseq+"");
+						 interfaceseq= interfaceseq+10;
+						mapStr.put("GROUP_ID",pch);
+						iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
+						
+						rmb=iu.add(rmb, bt_hl);
+						wb=iu.add(wb, bt);
+					}else{
+						type="-1";
+						pzsm=dfr+" 核销    "+rq1+"~"+rq2+" "+bxsm+" "+"差旅费";
+						pzsm2=dfr+" 出差报销";
+						mapStr.put("interface_seq", getInterfaceSeq());
+						mapStr.put("CURRENCY_CODE", bz);
+						mapStr.put("ENTERED_CR", getMoney(yzzje));
+						if("USD".equals(bz)){
+						mapStr.put("ACCOUNTED_CR", getMoney(yzzje_hl));
+						}
+						mapStr.put("SEGMENT5", dfkm_bx);
+						mapStr.put("REFERENCE2", pzsm);
+						mapStr.put("REFERENCE5", pzsm);
+						mapStr.put("REFERENCE10",pzsm);	
+
+						mapStr.put("REFERENCE30", interfaceseq+"");
+						 interfaceseq= interfaceseq+10;
+						mapStr.put("GROUP_ID",pch);
+						iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
+						
+						rmb=iu.add(rmb, bt_hl);
+						wb=iu.add(wb, bt);
+					}
 				}
 				updateRecordInfo(requestId,pch);
 			}
@@ -257,8 +375,7 @@ public class CreateCertificate {
 			}
 			if("72".equals(workflowId)){//核销
 				Map<String, String> result= new DoHXImpl().doHX(tableName,requestId,bookid,pch,now,SEGMENT1);
-				rmb=iu.add(rmb, result.get("rmb"));
-				wb=iu.add(wb, result.get("wb"));
+				
 				if("".equals(bz)){
 					sql_dt="select * from "+tableName+" where requestid="+requestId;
 					rs_dt.executeSql(sql_dt);
@@ -267,6 +384,8 @@ public class CreateCertificate {
 					}
 				}
 				if(rqcount == 1){
+					rmb=iu.add(rmb, result.get("rmb"));
+					wb=iu.add(wb, result.get("wb"));
 					sql_dt="select * from "+tableName+" where requestid="+requestId;
 					rs_dt.executeSql(sql_dt);
 					if(rs_dt.next()){
@@ -304,18 +423,124 @@ public class CreateCertificate {
 					if(rs_dt.next()){
 						skdwname = Util.null2String(rs_dt.getString("skdwmc"));
 					}
-					
 					if(Util.getFloatValue(kxje)==Util.getFloatValue(zzjr)){
 						type="0";
 						pzsm=dfr+" "+hxsm;
+						
 					}else if(Util.getFloatValue(kxje)>Util.getFloatValue(zzjr)){
 						type="1";
 						pzsm=dfr+" "+hxsm;
-						pzsm2=skdwname+" "+hxsm;
+						pzsm2=skdwname+" "+hxsm;						
 					}else{
 						type="-1";
 						pzsm=dfr+" "+hxsm;
 						pzsm2=skdwname+" "+hxsm;
+						
+					}
+				}else{
+					sql_dt="select * from "+tableName+" where requestid="+requestId;
+					rs_dt.executeSql(sql_dt);
+					if(rs_dt.next()){
+						hxsm = Util.null2String(rs_dt.getString("skdy"));
+						zzjr = Util.null2String(rs_dt.getString("zzjr")).replaceAll(",", "");
+						kxje = Util.null2String(rs_dt.getString("kxje")).replaceAll(",", "");
+						ybyt = Util.null2String(rs_dt.getString("ybyt")).replaceAll(",", "");
+						hl = Util.null2String(rs_dt.getString("hl"));
+						skdw = Util.null2String(rs_dt.getString("skdw"));
+						dfkm_hx = Util.null2String(rs_dt.getString("dfkm"));
+						zzd = Util.null2String(rs_dt.getString("zzd"));
+					}
+					if("".equals(zzjr)){
+						zzjr = "0";
+					}
+					if("".equals(kxje)){
+						kxje = "0";
+					}
+					if("".equals(ybyt)){
+						ybyt = "0";
+					}
+					if("".equals(hl)){
+						hl = "1";
+					}
+					zzjr_hl=iu.mul(zzjr, hl);
+					kxje_hl=iu.mul(kxje, hl);
+					ybyt_hl=iu.mul(ybyt, hl);
+					sql_dt="select b.kmbm from uf_zzk a,uf_zzk_dt1 b where a.id=b.mainid and a.id="+zzd;
+					rs_dt.executeSql(sql_dt);
+					if(rs_dt.next()){
+						zzkm = Util.null2String(rs_dt.getString("kmbm"));
+					}
+					sql_dt="select skdwmc from uf_skzh where id="+skdw;
+					rs_dt.executeSql(sql_dt);
+					if(rs_dt.next()){
+						skdwname = Util.null2String(rs_dt.getString("skdwmc"));
+					}
+
+					if(Util.getFloatValue(zzjr)==Util.getFloatValue("0")){
+						rmb=iu.add(rmb, result.get("rmb"));
+						wb=iu.add(wb, result.get("wb"));
+					}else if(Util.getFloatValue(kxje)==Util.getFloatValue(zzjr)){
+						type="0";
+						pzsm=dfr+" "+hxsm;
+						mapStr.put("interface_seq", getInterfaceSeq());
+						mapStr.put("CURRENCY_CODE", bz);
+						mapStr.put("ENTERED_CR", getMoney(kxje));
+						if("USD".equals(bz)){
+						mapStr.put("ACCOUNTED_CR", getMoney(kxje_hl));
+						}
+						mapStr.put("SEGMENT5", dfkm_hx);
+						mapStr.put("REFERENCE2", pzsm);
+						mapStr.put("REFERENCE5", pzsm);
+						mapStr.put("REFERENCE10",pzsm);	
+
+						mapStr.put("REFERENCE30", interfaceseq+"");
+						 interfaceseq= interfaceseq+10;
+						mapStr.put("GROUP_ID",pch);
+						iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
+					}else if(Util.getFloatValue(kxje)>Util.getFloatValue(zzjr)){
+						type="1";
+						pzsm=dfr+" "+hxsm;
+						pzsm2=skdwname+" "+hxsm;
+						mapStr.put("interface_seq", getInterfaceSeq());
+						mapStr.put("CURRENCY_CODE", bz);
+						mapStr.put("ENTERED_CR", getMoney(zzjr));
+						if("USD".equals(bz)){
+						mapStr.put("ACCOUNTED_CR", getMoney(zzjr_hl));
+						}
+						mapStr.put("SEGMENT5", dfkm_hx);
+						mapStr.put("REFERENCE2", pzsm);
+						mapStr.put("REFERENCE5", pzsm);
+						mapStr.put("REFERENCE10",pzsm);	
+
+						mapStr.put("REFERENCE30", interfaceseq+"");
+						 interfaceseq= interfaceseq+10;
+						mapStr.put("GROUP_ID",pch);
+						iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
+						
+						rmb=iu.add(rmb, ybyt_hl);
+						wb=iu.add(wb, ybyt);
+					}else{
+						type="-1";
+						pzsm=dfr+" "+hxsm;
+						pzsm2=skdwname+" "+hxsm;
+						mapStr.put("interface_seq", getInterfaceSeq());
+						mapStr.put("CURRENCY_CODE", bz);
+						mapStr.put("ENTERED_CR", getMoney(zzjr));
+						if("USD".equals(bz)){
+						mapStr.put("ACCOUNTED_CR", getMoney(zzjr_hl));
+						}
+						mapStr.put("SEGMENT5", dfkm_hx);
+						mapStr.put("REFERENCE2", pzsm);
+						mapStr.put("REFERENCE5", pzsm);
+						mapStr.put("REFERENCE10",pzsm);	
+
+						mapStr.put("REFERENCE30", interfaceseq+"");
+						 interfaceseq= interfaceseq+10;
+						mapStr.put("GROUP_ID",pch);
+						iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
+						
+						rmb=iu.add(rmb, ybyt_hl);
+						wb=iu.add(wb, ybyt);
 					}
 				}
 				updateRecordInfo(requestId,pch);
@@ -430,29 +655,25 @@ public class CreateCertificate {
 		if("".equals(bm)){
 			bm=" ";
 		}
-		Map<String, String> mapStr = new HashMap<String, String>();
 		mapStr.put("interface_seq", getInterfaceSeq());
-		mapStr.put("STATUS", "NEW");
-		mapStr.put("SET_OF_BOOKS_ID", bookid);
-		mapStr.put("ACCOUNTING_DATE", "to_date('"+now+"','dd-mm-yyyy')");
 		mapStr.put("CURRENCY_CODE", bz);
-		mapStr.put("DATE_CREATED","to_date('"+now+"','dd-mm-yyyy')");
-		mapStr.put("CREATED_BY", "1069");
-		mapStr.put("ACTUAL_FLAG","A");
-		mapStr.put("USER_JE_CATEGORY_NAME", "Other");
-		mapStr.put("USER_JE_SOURCE_NAME", "Manual");
-		mapStr.put("SEGMENT1", SEGMENT1);//
-		mapStr.put("SEGMENT2", "0000");//项目码
-		mapStr.put("SEGMENT3", "000");//地区码
-		mapStr.put("SEGMENT4", "0000");//部门码
-		mapStr.put("REFERENCE1","OA"+pch);
-		mapStr.put("REFERENCE4","OA"+pch);
-		mapStr.put("SEGMENT5", bm);//科目
+		
 		
 		if(rqcount >1){
-			mapStr.put("ENTERED_CR", getMoney(wb));
-			if("USD".equals(bz)){
-			mapStr.put("ACCOUNTED_CR", getMoney(rmb));
+			if(Util.getFloatValue(getMoney(wb))<0){
+				mapStr.put("ENTERED_CR", "");
+				if("USD".equals(bz)){
+				mapStr.put("ACCOUNTED_CR", "");
+				}
+				mapStr.put("ENTERED_DR", getMoney(wb).replace("-", ""));
+				if("USD".equals(bz)){
+				mapStr.put("ACCOUNTED_DR", getMoney(rmb).replace("-", ""));
+				}
+			}else{
+				mapStr.put("ENTERED_CR", getMoney(wb));
+				if("USD".equals(bz)){
+				mapStr.put("ACCOUNTED_CR", getMoney(rmb));
+				}
 			}
 			mapStr.put("REFERENCE2", "支付报销款");
 			mapStr.put("REFERENCE5","支付报销款");

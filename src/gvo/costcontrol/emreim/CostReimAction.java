@@ -19,7 +19,7 @@ import weaver.hrm.resource.ResourceComInfo;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 /**
- * 现金购报销流程
+ * 费用类报销流程
  * @author tangj
  *
  */
@@ -27,7 +27,7 @@ public class CostReimAction implements Action {
 	
 	public String execute(RequestInfo info) {
 		BaseBean log = new BaseBean();
-		log.writeLog("进入现金购费用报销流程CashReimAction————————");
+		log.writeLog("进入费用类报销流程CashReimAction————————");
 		String requestid = info.getRequestid();// 请求ID
 		String workflowID = info.getWorkflowid();// 流程ID
 		String sql = "";
@@ -41,8 +41,10 @@ public class CostReimAction implements Action {
 		String FLOWNO = "";// 单据编号
 		String REQNAME = "";// 经办人姓名
 	
-		String VOUCHERTYPE = "ZE";// 凭证类型
+		String VOUCHERTYPE = "KR";// 凭证类型
 		String VOUCHERSPUN = "X";// 是否抛转
+		
+		String sap_bz = "";
 
 		sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = "
 				+ workflowID + ")";
@@ -74,7 +76,11 @@ public class CostReimAction implements Action {
 			FYBXSM = Util.null2String(rs.getString("sy"));
 			FLOWNO = Util.null2String(rs.getString("bxdh"));
 			VOUCHERSPUN = Util.null2String(rs.getString("sfpz"));
+			sap_bz = Util.null2String(rs.getString("sap_bz"));
 
+		}
+		if("S".equals(sap_bz)){
+			return SUCCESS;
 		}
 		if("0".equals(VOUCHERSPUN)){
 			VOUCHERSPUN = "X";
@@ -177,8 +183,8 @@ public class CostReimAction implements Action {
 		String E_MSGTX = "";// 消息文本
 		E_BELNR = saxXmlUtil.getResult("E_BELNR", message);
 		E_MSGTX = saxXmlUtil.getResult("E_MSGTX", message);
-		sql = "update " + tableName + " set saphxzt='" + sign + "',saphxcwxx='"
-				+ E_MSGTX + "',saphxpzh='" + E_BELNR + "' where requestid="
+		sql = "update " + tableName + " set sap_bz='" + sign + "',sap_xxms='"
+				+ E_MSGTX + "',sap_pzh='" + E_BELNR + "' where requestid="
 				+ requestid;
 		log.writeLog("更新语句————————" + sql);
 		rs.execute(sql);

@@ -87,7 +87,7 @@ public class PostWorkflowInf extends BaseBean {
 						}
 					}
 				}
-				flowtitle = Util.null2String(rs.getString("requestname"));
+				flowtitle = Util.null2String(rs.getString("requestnamenew"));
 				createdatetime = Util.null2String(rs.getString("createdate") + " " + rs.getString("createtime"));
 			}
 			// 查询操作记录

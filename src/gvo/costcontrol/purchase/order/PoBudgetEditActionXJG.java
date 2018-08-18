@@ -1,6 +1,10 @@
 package gvo.costcontrol.purchase.order;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import weaver.conn.RecordSet;
+import weaver.formmode.setup.ModeRightInfo;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
@@ -24,6 +28,7 @@ public class PoBudgetEditActionXJG implements Action{
 		String reqproject = "";//明细 请求项目
 		String ysdjje = "";//预算冻结金额
 		String tableName = "";
+		String mxid = "";
 		String sql = " Select tablename From Workflow_bill Where id in ("
 				+ " Select formid From workflow_base Where id= " + workflowID
 				+ ")";
@@ -39,19 +44,21 @@ public class PoBudgetEditActionXJG implements Action{
 		sql="select * from "+tableName+"_dt1 where mainid="+mainID;
 		rs.executeSql(sql);
 		while(rs.next()){
+			mxid = Util.null2String(rs.getString("id"));
 			purrequest = Util.null2String(rs.getString("purrequest"));
-			reqproject = Util.null2String(rs.getString("reqproject"));
+			reqproject = Util.null2String(rs.getString("reqproject")).replaceAll("^(0+)", "");
 			ysdjje = Util.null2String(rs.getString("ysdjje"));
 			if("".equals(ysdjje)){
 				ysdjje = "0";
 			}
 			if(!"".equals(purrequest)&&!"".equals(reqproject)){
-				updatePrBudgetTable(requestid,purrequest,reqproject,ysdjje,"1");
+				updatePrBudgetTable(requestid,purrequest,reqproject,ysdjje,"1",mxid);
 			}
 		}
 		sql="select * from "+tableName+"_dt2 where mainid="+mainID;
 		rs.executeSql(sql);
 		while(rs.next()){
+			mxid = Util.null2String(rs.getString("id"));
 			purrequest = Util.null2String(rs.getString("purrequest"));
 			reqproject = Util.null2String(rs.getString("reqproject"));
 			ysdjje = Util.null2String(rs.getString("ysdjje"));
@@ -59,7 +66,7 @@ public class PoBudgetEditActionXJG implements Action{
 				ysdjje = "0";
 			}
 			if(!"".equals(purrequest)&&!"".equals(reqproject)){
-				updatePrBudgetTable(requestid,purrequest,reqproject,ysdjje,"2");
+				updatePrBudgetTable(requestid,purrequest,reqproject,ysdjje,"2",mxid);
 			}
 		}
 		
@@ -68,8 +75,11 @@ public class PoBudgetEditActionXJG implements Action{
 		return SUCCESS;
 	}
 	
-	public void updatePrBudgetTable(String requestid,String cgsqdh,String mxhid,String ysdjje,String dt){
+	public void updatePrBudgetTable(String requestid,String cgsqdh,String mxhid,String ysdjje,String dt,String mxid){
+		String modeid=getModeId("uf_pr_budget");
 		RecordSet rs = new RecordSet();
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		String now = sf.format(new Date());
 		String amount="0";
 		String cdbm = "";
 		String yskm = "";
@@ -92,16 +102,58 @@ public class PoBudgetEditActionXJG implements Action{
 			gsdm = Util.null2String(rs.getString("gsdm"));
 		}
 		if(!"0".equals(amount)){
-			sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm)"
+			sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm,modedatacreatedate,modedatacreater,modedatacreatertype,formmodeid,mxid)"
 					+ " values('"+requestid+ "','"+cgsqdh+"','"+ mxhid+ "','"+ cdbm+ "','"
-					+ yskm + "','" + qj + "','" + amount + "','"+type+"','"+gsdm+"') ";
+					+ yskm + "','" + qj + "','" + amount + "','"+type+"','"+gsdm+"','"+now+"','1','0','"+modeid+"','"+mxid+"') ";
 			rs.executeSql(sql);		
-		}
-		if("2".equals(dt)){
-			sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm)"
-					+ " values('"+requestid+ "','"+cgsqdh+"','"+ mxhid+ "','"+ cdbm+ "','"
-					+ yskm + "','" + qj + "','" + ysdjje + "','"+type+"','"+gsdm+"') ";
+			String prid="";
+			sql = "select id from uf_pr_budget where lcid='"+ requestid + "' and mxhid='"+mxhid+"' and je='"+amount+"' order by id desc ";
 			rs.executeSql(sql);
+			if (rs.next()) {
+				prid = Util.null2String(rs.getString("id"));
+			}
+			if (!"".equals(prid)) {
+				ModeRightInfo ModeRightInfo = new ModeRightInfo();
+				ModeRightInfo.editModeDataShare(
+						Integer.valueOf("1"),
+						Util.getIntValue(modeid),
+						Integer.valueOf(prid));
+			}
 		}
+		//if("2".equals(dt)){
+			sql="insert into uf_pr_budget (lcid,cgsqdh,mxhid,cdbm,yskm,qj,je,type,gsdm,modedatacreatedate,modedatacreater,modedatacreatertype,formmodeid,mxid)"
+					+ " values('"+requestid+ "','"+cgsqdh+"','"+ mxhid+ "','"+ cdbm+ "','"
+					+ yskm + "','" + qj + "','" + ysdjje + "','"+type+"','"+gsdm+"','"+now+"','1','0','"+modeid+"','"+mxid+"') ";
+			rs.executeSql(sql);
+			String prid="";
+			sql = "select id from uf_pr_budget where lcid='"+ requestid + "' and mxhid='"+mxhid+"' and je='"+ysdjje+"' order by id desc ";
+			rs.executeSql(sql);
+			if (rs.next()) {
+				prid = Util.null2String(rs.getString("id"));
+			}
+			if (!"".equals(prid)) {
+				ModeRightInfo ModeRightInfo = new ModeRightInfo();
+				ModeRightInfo.editModeDataShare(
+						Integer.valueOf("1"),
+						Util.getIntValue(modeid),
+						Integer.valueOf(prid));
+			}
+		//}
+	}
+	public String getModeId(String tableName){
+		RecordSet rs = new RecordSet();
+		String formid = "";
+		String modeid = "";
+		String sql = "select id from workflow_bill where tablename='"+tableName+"'";
+		rs.executeSql(sql);
+		if(rs.next()){
+			formid = Util.null2String(rs.getString("id"));
+		}
+		sql="select id from modeinfo where  formid="+formid;
+		rs.executeSql(sql);
+		if(rs.next()){
+			modeid = Util.null2String(rs.getString("id"));
+		}
+		return modeid;
 	}
 }

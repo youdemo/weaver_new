@@ -24,8 +24,8 @@ public class ChangePoInfoAction implements Action {
 	/**
 	 * 采购订单修改接口
 	 * 
-	 * @author daisy
-	 * @version 1.0 2017-11-17
+	 * @author tangjianyong
+	 * @version 1.0 2018-07-02
 	 **/
 	BaseBean log = new BaseBean();
 
@@ -53,12 +53,7 @@ public class ChangePoInfoAction implements Action {
 				mainID = Util.null2String(rs.getString("ID"));
 				ORDERNO = Util.null2String(rs.getString("orderno"));
 			}
-			try {
-				head.put("REQUESTID", requestid);
-				head.put("ORDERNO", ORDERNO);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+			
 			JSONArray jsonArray = new JSONArray();
 			// 查询明细表
 			sql = "select * from " + tableNamedt + " where mainid=" + mainID;
@@ -88,6 +83,8 @@ public class ChangePoInfoAction implements Action {
 				}
 			}
 			try {
+				head.put("REQUESTID", requestid);
+				head.put("ORDERNO", ORDERNO);				
 				head.put("CHILD_ChangePRService_SAP_1_LIST", jsonArray);
 			} catch (JSONException e1) {
 				e1.printStackTrace();
@@ -99,8 +96,9 @@ public class ChangePoInfoAction implements Action {
 			String time = sdf.format(new Date());
 			Head head1 = new Head("SAP.CG_HNYG-006_" + time, "1", "OA", "1", "userSAP", "P@ss0rd",
 					"", "");
-			String json = px.javaToXml(jsonArray.toString(), "", requestid, "",
+			String json = px.javaToXml(jsonArr.toString(), "", requestid, "",
 					head1);
+			log.writeLog("打印json"+json);
 			String sign = "";
 			String message = "";
 			Response result = null;

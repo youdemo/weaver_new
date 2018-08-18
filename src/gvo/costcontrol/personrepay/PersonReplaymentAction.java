@@ -137,7 +137,7 @@ public class PersonReplaymentAction implements Action{
 			head.put("BLDAT",gzrq);
 			head.put("BUDAT",gzrq);
 			head.put("MONAT",remark);
-			head.put("WAERS",currtype);
+			head.put("WAERS","CNY");
 			head.put("BKTXT",remark);
 			head.put("XBLNR_ALT",flowno);
 			head.put("T_ITEMS", array1);
@@ -146,12 +146,11 @@ public class PersonReplaymentAction implements Action{
 			log.writeLog("head异常");
 			log.writeLog(e);
 		}
-		array.put(head);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		String time = sdf.format(new Date());
 		PurXmlUtil tran = new PurXmlUtil();
 		Head head1 = new Head("SAP.FI_VXG-061_" + time, "1", "OA", "1", "userSAP", "P@ss0rd", "", "");
-		String json = tran.javaToXml(array.toString(), "", requestid, "",head1);
+		String json = tran.javaToXml(head.toString(), "", requestid, "",head1);
 		log.writeLog("json:"+json);
 		Response result = null;
 		try {
