@@ -344,25 +344,27 @@ public class AttendanceIntegrateImpl {
 				int countnum=0;
 				String residentplace = "";
 				JSONObject jo = new JSONObject(dataInfo);
-				String P_begindate=jo.getString("P_begindate");
-				String P_begintime=jo.getString("P_begintime");
-				String P_enddate=jo.getString("P_enddate");
-				String P_endtime=jo.getString("P_endtime");
+				String P_begindate=jo.getString("A_begindate");
+				String P_begintime=jo.getString("A_begintime");
+				String P_enddate=jo.getString("A_enddate");
+				String P_endtime=jo.getString("A_endtime");
 				String overtime_type=jo.getString("overtime_type");
-				sql="select  count(1) as count from "+tablename+" a ,"+tablename+"_dt1 b where a.id=b.mainid and b.name="+creater+" and (b.a_begindate is  null or b.a_begintime is null or b.a_enddate is null or b.a_endtime is null)"+
-						" and '"+P_begindate+P_begintime+"'<b.p_enddate||b.p_endtime and '"+P_enddate+P_endtime+"'>b.p_begindate||b.p_begintime ";
+//				sql="select  count(1) as count from "+tablename+" a ,"+tablename+"_dt1 b where a.id=b.mainid and b.name="+creater+" and (b.a_begindate is  null or b.a_begintime is null or b.a_enddate is null or b.a_endtime is null)"+
+//						" and '"+P_begindate+P_begintime+"'<b.p_enddate||b.p_endtime and '"+P_enddate+P_endtime+"'>b.p_begindate||b.p_begintime ";
+				sql="select  count(1) as count from "+tablename+" a ,"+tablename+"_dt1 b where a.id=b.mainid and b.name="+creater+" and (b.a_begindate is not null and b.a_begintime is not null and b.a_enddate is not null and b.a_endtime is not null)"+
+						" and '"+P_begindate+P_begintime+"'<b.a_enddate||b.a_endtime and '"+P_enddate+P_endtime+"'>b.a_begindate||b.a_begintime ";
 				rs.executeSql(sql);
 				if(rs.next()){
 					countnum = rs.getInt("count");
 				}
-				if(countnum<=0){
-					sql="select  count(1) as count from "+tablename+" a ,"+tablename+"_dt1 b where a.id=b.mainid and b.name="+creater+" and (b.a_begindate is not null and b.a_begintime is not null and b.a_enddate is not null and b.a_endtime is not null)"+
-							" and '"+P_begindate+P_begintime+"'<b.a_enddate||b.a_endtime and '"+P_enddate+P_endtime+"'>b.a_begindate||b.a_begintime ";
-					rs.executeSql(sql);
-					if(rs.next()){
-						countnum = rs.getInt("count");
-					}
-				}
+//				if(countnum<=0){
+//					sql="select  count(1) as count from "+tablename+" a ,"+tablename+"_dt1 b where a.id=b.mainid and b.name="+creater+" and (b.a_begindate is not null and b.a_begintime is not null and b.a_enddate is not null and b.a_endtime is not null)"+
+//							" and '"+P_begindate+P_begintime+"'<b.a_enddate||b.a_endtime and '"+P_enddate+P_endtime+"'>b.a_begindate||b.a_begintime ";
+//					rs.executeSql(sql);
+//					if(rs.next()){
+//						countnum = rs.getInt("count");
+//					}
+//				}
 				if(countnum>0){
 					retMap.put("MSG_TYPE", "E");
 					retMap.put("MSG_CONTENT", "OA流程中存在重复的时间段加班，请检查");
@@ -488,7 +490,7 @@ public class AttendanceIntegrateImpl {
 	/**
 	 * 
 	 * @param creater
-	 * @param datainfo {"overtime_type":"加班类型","shift":"班次","month_hours":"当月加班时数","overtime_way":"加班方式","reason":"加班事由","P_hours":"加班时数","P_begindate":"开始日期","P_begintime":"开始时间","limit_hours":"加班受限时数","cday":"加班归属日期","name":"姓名","P_endtime":"结束时间","P_enddate":"结束日期","overtime_transfer":"加班转换","work_code":"工号"}
+	 * @param datainfo {"overtime_type":"加班类型","shift":"班次","month_hours":"当月加班时数","overtime_way":"加班方式","reason":"加班事由","A_hours":"加班时数","A_begindate":"开始日期","A_begintime":"开始时间","limit_hours":"加班受限时数","cday":"加班归属日期","name":"姓名","A_endtime":"结束时间","A_enddate":"结束日期","overtime_transfer":"加班转换","work_code":"工号","JOB_TYPE":"工作性质"}
 	   加班转换 0 转支付 1 转调休 加班方式 0 正常加班 1公出加班 2 出差加班
 	 * @throws Exception 
 	 */
@@ -501,11 +503,12 @@ public class AttendanceIntegrateImpl {
 		String overtime_transfer = "";//加班转换
 		String overtime_way = "";//加班方式
 		String cday = "";//加班归属日期
-		String P_begindate = "";//开始日期
-		String P_begintime = "";//开始时间
-		String P_enddate = "";//结束日期
-		String P_endtime = "";//结束时间
-		String P_hours = "";//加班时数
+		String A_begindate = "";//开始日期
+		String A_begintime = "";//开始时间
+		String A_enddate = "";//结束日期
+		String A_endtime = "";//结束时间
+		String A_hours = "";//加班时数
+		String job_type = "";//工作性质
 		String month_hours = "";//当月加班时数
 		String limit_hours = "";//加班受限时数
 		String reason = "";//加班事由
@@ -517,11 +520,12 @@ public class AttendanceIntegrateImpl {
 		overtime_transfer = jo.getString("overtime_transfer");
 		overtime_way = jo.getString("overtime_way");
 		cday = jo.getString("cday");
-		P_begindate = jo.getString("P_begindate");
-		P_begintime = jo.getString("P_begintime");
-		P_enddate = jo.getString("P_enddate");
-		P_endtime = jo.getString("P_endtime");
-		P_hours = jo.getString("P_hours");
+		A_begindate = jo.getString("A_begindate");
+		A_begintime = jo.getString("A_begintime");
+		A_enddate = jo.getString("A_enddate");
+		A_endtime = jo.getString("A_endtime");
+		A_hours = jo.getString("A_hours");
+		job_type = jo.getString("JOB_TYPE");
 		month_hours = jo.getString("month_hours");
 		limit_hours = jo.getString("limit_hours");
 		shift = jo.getString("shift");
@@ -552,11 +556,12 @@ public class AttendanceIntegrateImpl {
 		node.put("overtime_transfer", overtime_transfer);
 		node.put("shift", shift);
 		node.put("overtime_type", overtime_type);		
-		node.put("P_begindate", P_begindate);
-		node.put("P_enddate", P_enddate);
-		node.put("P_begintime", P_begintime);
-		node.put("P_endtime", P_endtime);
-		node.put("P_hours", P_hours);
+		node.put("A_begindate", A_begindate);
+		node.put("A_enddate", A_enddate);
+		node.put("A_begintime", A_begintime);
+		node.put("A_endtime", A_endtime);
+		node.put("a_hours", A_hours);
+		node.put("job_type", job_type);
 		
 		node.put("month_hours", month_hours);
 		node.put("limit_hours", limit_hours);
@@ -744,13 +749,13 @@ public class AttendanceIntegrateImpl {
 			return json.toString();
 		}
 		String jsonstr = "";
-		if("HR-037".equals(workflowType)){
+		if("HR-017".equals(workflowType)){
 			jsonstr=getOldRequestHR037(tablename, workflowid, creater, num);
-		}else if("HR-040".equals(workflowType)){
+		}else if("HR-012".equals(workflowType)){
 			jsonstr=getOldRequestHR040(tablename, workflowid, creater, num);
-		}else if("HR-041".equals(workflowType)){
+		}else if("HR-010".equals(workflowType)){
 			jsonstr=getOldRequestHR041(tablename, workflowid, creater, num);
-		}else if("HR-042".equals(workflowType)){
+		}else if("HR-023".equals(workflowType)){
 			jsonstr=getOldRequestHR042(tablename, workflowid, creater, num);
 		}
 		return jsonstr;

@@ -60,7 +60,7 @@ public class PurchaseAddForGDZC implements Action{
 			if(!"".equals(nbddh)){
 				continue;
 			}
-			datainfo="{\"I_BUKRS\":\""+gsdm+"\",\"I_CO_AREA\":\"1000\",\"I_CURRENCY\":\"CNY\",\"I_ORDER_NAME\":\""+zcmc+"\",\"I_ORDER_TYPE\":\"Z003\",\"I_PLANT\":\""+gcdm+"\",\"I_RESPCCTR\":\""+cbzx+"\"}";
+			datainfo="{\"I_BUKRS\":\""+gsdm+"\",\"I_CO_AREA\":\"1000\",\"I_CURRENCY\":\"CNY\",\"I_ORDER_NAME\":\""+zcmc+"\",\"I_ORDER_TYPE\":\"Z002\",\"I_PLANT\":\""+gcdm+"\",\"I_RESPCCTR\":\""+cbzx+"\"}";
 			PurXmlUtil tran = new PurXmlUtil();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 			String time = sdf.format(new Date());

@@ -82,6 +82,11 @@ public abstract class Test {
 		}else{
 			System.out.println(aa);
 		}
+		JSONObject jo = new JSONObject();
+		jo.put("PjtID", "test123");
+		jo.put("DCPID", "DCPID123");
+		jo.put("DCPName", "dcp名称");
+		System.out.println(jo.toString());
 
 	}
 //	public static void main(String[] args) throws Exception  {

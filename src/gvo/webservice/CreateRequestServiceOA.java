@@ -76,7 +76,38 @@ public class CreateRequestServiceOA extends BaseBean {
         log.writeLog("CreateHR015Service result:" + result);
         return result;
     }
-
+    public String CreateEmployApproval(String dataInfo) throws JSONException {
+        BaseBean log = new BaseBean();
+        log.writeLog("CreateMaterialApproval dataInfo:" + dataInfo);
+        if ("".equals(dataInfo)) {
+            Map<String, String> retMap = new HashMap<String, String>();
+            retMap.put("MSG_TYPE", "E");
+            retMap.put("MSG_CONTENT", "json数据无法解析");
+            retMap.put("OA_ID", "0");
+            log.writeLog("CreateEmployApproval result:" + getJsonStr(retMap));
+            return getJsonStr(retMap);
+        }
+        CreateRequestServiceOAImpl crso = new CreateRequestServiceOAImpl();
+        String result = crso.doserviceEmploy(dataInfo);
+        log.writeLog("CreateEmployApproval result:" + result);
+        return result;
+    }
+    public String CreateDocPermiss(String dataInfo) throws JSONException {
+        BaseBean log = new BaseBean();
+        log.writeLog("CreateDocPermiss dataInfo:" + dataInfo);
+        if ("".equals(dataInfo)) {
+            Map<String, String> retMap = new HashMap<String, String>();
+            retMap.put("MSG_TYPE", "E");
+            retMap.put("MSG_CONTENT", "json数据无法解析");
+            retMap.put("OA_ID", "0");
+            log.writeLog("CreateDocPermiss result:" + getJsonStr(retMap));
+            return getJsonStr(retMap);
+        }
+        CreateRequestServiceOAImpl crso = new CreateRequestServiceOAImpl();
+        String result = crso.doserviceDocLimit(dataInfo);
+        log.writeLog("CreateDocPermiss result:" + result);
+        return result;
+    }
     private String getJsonStr(Map<String, String> map) {
         JSONObject json = new JSONObject();
         Iterator<String> it = map.keySet().iterator();

@@ -43,6 +43,7 @@ public class CostReimAction implements Action {
 	
 		String VOUCHERTYPE = "KR";// 凭证类型
 		String VOUCHERSPUN = "X";// 是否抛转
+		String zzbs = "";//总账标识
 		
 		String sap_bz = "";
 
@@ -77,6 +78,7 @@ public class CostReimAction implements Action {
 			FLOWNO = Util.null2String(rs.getString("bxdh"));
 			VOUCHERSPUN = Util.null2String(rs.getString("sfpz"));
 			sap_bz = Util.null2String(rs.getString("sap_bz"));
+			zzbs = Util.null2String(rs.getString("zzbs"));
 
 		}
 		if("S".equals(sap_bz)){
@@ -150,6 +152,7 @@ public class CostReimAction implements Action {
 			head.put("REQNAME", REQNAME);
 			head.put("VOUCHERTYPE", VOUCHERTYPE);
 			head.put("VOUCHERSPUN", VOUCHERSPUN);
+			head.put("UMSKZ", zzbs);
 			head.put("CHILD_LIST_TB2", array1);
 			head.put("CHILD_LIST_TB1", array2);
 		} catch (JSONException e) {

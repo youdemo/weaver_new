@@ -95,7 +95,7 @@ public class PostWorkflowInf extends BaseBean {
 
 			String sql2 = "select * from workflow_currentoperator where requestid =" + requestid + (!"".equals(userid)?" and userid = '" + userid + "'":"") + "  order by id";
 			
-			this.writeLog("PostWorkflowInf.class", "查询待推送的数据SQL:[" + sql2 + "]");
+			//this.writeLog("PostWorkflowInf.class", "查询待推送的数据SQL:[" + sql2 + "]");
 			
 			rs3.executeSql(sql2);
 			while (rs3.next()) {
@@ -147,7 +147,7 @@ public class PostWorkflowInf extends BaseBean {
 				
 				// 被分配到主账号
 				receiver_loginid = other_receiver_loginid;
-				writeLog("接收者:" + receiver_loginid + "isremark状态:" + isremark);
+				//writeLog("接收者:" + receiver_loginid + "isremark状态:" + isremark);
 				//whitelist=receiver_loginid;
 				//for(String whiteuser:whitelist.split(",")){
 					//if(receiver_loginid.equals(whiteuser)){
@@ -159,11 +159,11 @@ public class PostWorkflowInf extends BaseBean {
 									receiver_loginid, receivedatetime);
 							AnyType2AnyTypeMapEntry[] dataArray = OfsClient.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient.getClient().receiveTodoRequestByMap(dataArray);
-						//	writeLog("PostWorkflowInf(143)");
-							OfsClient.printResultArray(resultArray);
+						//	("PostWorkflowInf(143)");
+							//OfsClient.printResultArray(resultArray);
 						}
 						if ("1".equals(isremark) || "8".equals(isremark) || "9".equals(isremark)) {
-							this.writeLog("requestid:[" + requestid + "],receiver_loginid:[" + receiver_loginid + "]");
+							//this.writeLog("requestid:[" + requestid + "],receiver_loginid:[" + receiver_loginid + "]");
 							
 							// 待办事宜 往统一待办库发待办消息
 							Map<String, String> dataMap = buildDataMap(syscode,
@@ -172,15 +172,15 @@ public class PostWorkflowInf extends BaseBean {
 									receiver_loginid, receivedatetime);
 							AnyType2AnyTypeMapEntry[] dataArray = OfsClient.buildDataArray(dataMap);
 					//		writeLog("PostWorkflowInf(155)");
-							OfsClient.printResultArray(dataArray);
+							//OfsClient.printResultArray(dataArray);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient.getClient().receiveTodoRequestByMap(dataArray);
 					//		writeLog("PostWorkflowInf(158)");
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 
 						} else if ("2".equals(isremark)) {
-							writeLog("已办参数:" + syscode + " " + requestid + " "
-									+ flowtitle + " " + workflowname + " "
-									+ flownodename + " " + receiver_loginid);
+							//writeLog("已办参数:" + syscode + " " + requestid + " "
+							//		+ flowtitle + " " + workflowname + " "
+							//		+ flownodename + " " + receiver_loginid);
 							String viewtype = "1";
 							// 已办事宜 往统一待办库发已办消息
 							/*
@@ -198,15 +198,15 @@ public class PostWorkflowInf extends BaseBean {
 									createdatetime, receiver_loginid, receivedatetime);
 							AnyType2AnyTypeMapEntry[] dataArray = OfsClient
 									.buildDataArray(dataMap);
-							writeLog("PostWorkflowInf(182)");
+							//writeLog("PostWorkflowInf(182)");
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveRequestInfoByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 
 						} else if ("4".equals(isremark)) {
-							writeLog("办结参数:" + syscode + " " + requestid + " "
-									+ flowtitle + " " + workflowname + " "
-									+ flownodename + " " + receiver_loginid);
+							//writeLog("办结参数:" + syscode + " " + requestid + " "
+							//		+ flowtitle + " " + workflowname + " "
+							//		+ flownodename + " " + receiver_loginid);
 							String viewtype = "0";
 							// 办结 往统一待办库发办结消息
 							/*
@@ -222,11 +222,11 @@ public class PostWorkflowInf extends BaseBean {
 									requestid, flowtitle, workflowname, flownodename,
 									pcurl, appurl, isremark, viewtype, creater_loginid,
 									createdatetime, receiver_loginid, receivedatetime);
-							writeLog("归档调用requestinfo接口的viewtype的值是" + viewtype);
+							//writeLog("归档调用requestinfo接口的viewtype的值是" + viewtype);
 							AnyType2AnyTypeMapEntry[] dataArray = OfsClient.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient.getClient().receiveRequestInfoByMap(dataArray);
-							writeLog("PostWorkflowInf(209)");
-							OfsClient.printResultArray(resultArray);
+							//writeLog("PostWorkflowInf(209)");
+							//OfsClient.printResultArray(resultArray);
 							// 只要有归档则将待办和已办都变为办结状态
 							RecordSet rs4 = new RecordSet();
 							String sql3 = "select * from workflow_currentoperator where requestid =" + requestid + "  order by nodeid";
@@ -248,11 +248,11 @@ public class PostWorkflowInf extends BaseBean {
 									flownodename1 = Util.null2String(rs1.getString("nodename"));
 								}
 								String isremark1 = Util.null2String(rs4.getString("isremark")); // 操作类型
-								writeLog("接收者:" + receiver_loginid1 + "isremark状态:" + isremark1);
+								//writeLog("接收者:" + receiver_loginid1 + "isremark状态:" + isremark1);
 								//whitelist=receiver_loginid;
 								//for(String whiteuser1:whitelist.split(",")){
 									//if(receiver_loginid1.equals(whiteuser1)){
-										if ("0".equals(isremark1)||"2".equals(isremark1)) {
+										if ("0".equals(isremark1)||"2".equals(isremark1)||"4".equals(isremark1)) {
 											// 办结 往统一待办库发办结消息
 											Map<String, String> dataMap1 = buildDataMap(
 													syscode, requestid, flowtitle,
@@ -260,7 +260,7 @@ public class PostWorkflowInf extends BaseBean {
 													receiver_loginid1);
 											AnyType2AnyTypeMapEntry[] dataArray1 = OfsClient.buildDataArray(dataMap1);
 											AnyType2AnyTypeMapEntry[] resultArray1 = OfsClient.getClient().processOverRequestByMap(dataArray1);
-											OfsClient.printResultArray(resultArray1);
+											//OfsClient.printResultArray(resultArray1);
 										}
 									//}
 								//}
@@ -278,7 +278,7 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().processDoneRequestByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 						}
 						if ("0".equals(isremark) && "0".equals(takisremark)) {
 							// 待办事宜 往统一待办库发待办消息
@@ -288,10 +288,10 @@ public class PostWorkflowInf extends BaseBean {
 									receiver_loginid, receivedatetime);
 							AnyType2AnyTypeMapEntry[] dataArray = OfsClient
 									.buildDataArray(dataMap);
-							writeLog("PostWorkflowInf(272)");
+							//writeLog("PostWorkflowInf(272)");
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveTodoRequestByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 						}
 					}
 				//}
@@ -396,12 +396,12 @@ public class PostWorkflowInf extends BaseBean {
 								requestid, flowtitle, workflowname, flownodename,
 								pcurl, appurl, isremark, viewtype, creater_loginid,
 								createdatetime, receiver_loginid, receivedatetime);
-						writeLog("意见征询调用requestinfo接口的viewtype的值是" + viewtype);
+						//writeLog("意见征询调用requestinfo接口的viewtype的值是" + viewtype);
 						AnyType2AnyTypeMapEntry[] dataArray = OfsClient
 								.buildDataArray(dataMap);
 						AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 								.getClient().receiveRequestInfoByMap(dataArray);
-						OfsClient.printResultArray(resultArray);
+						//OfsClient.printResultArray(resultArray);
 					}
 				}
 				
@@ -505,18 +505,18 @@ public class PostWorkflowInf extends BaseBean {
 						if(!isremark.equals("2")&&!isremark.equals("4")){
 							isremark="0";
 						}
-						writeLog("接收者:" + receiver_loginid + "isremark状态:"
-								+ isremark);
+						//writeLog("接收者:" + receiver_loginid + "isremark状态:"
+						//		+ isremark);
 						Map<String, String> dataMap = buildDataMap(syscode,
 								requestid, flowtitle, workflowname, flownodename,
 								pcurl, appurl, isremark, viewtype, creater_loginid,
 								createdatetime, receiver_loginid, receivedatetime);
-						writeLog("未读改已读调用requestinfo接口的viewtype的值是" + viewtype);
+						//writeLog("未读改已读调用requestinfo接口的viewtype的值是" + viewtype);
 						AnyType2AnyTypeMapEntry[] dataArray = OfsClient
 								.buildDataArray(dataMap);
 						AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 								.getClient().receiveRequestInfoByMap(dataArray);
-						OfsClient.printResultArray(resultArray);
+						//OfsClient.printResultArray(resultArray);
 					}
 				}
 			
@@ -549,7 +549,7 @@ public class PostWorkflowInf extends BaseBean {
 					.buildDataArray(dataMap1);
 			AnyType2AnyTypeMapEntry[] resultArray1 = OfsClient.getClient()
 					.deleteUserRequestInfoByMap(dataArray1);
-			OfsClient.printResultArray(resultArray1);
+			//OfsClient.printResultArray(resultArray1);
 		
 		
 
@@ -620,7 +620,7 @@ public class PostWorkflowInf extends BaseBean {
 							.buildDataArray(dataMap1);
 					AnyType2AnyTypeMapEntry[] resultArray1 = OfsClient.getClient()
 							.deleteUserRequestInfoByMap(dataArray1);
-					OfsClient.printResultArray(resultArray1);
+					//OfsClient.printResultArray(resultArray1);
 				}
 			}
 		
@@ -672,7 +672,7 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveTodoRequestByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 						}
 						if ("1".equals(isremark) || "8".equals(isremark)
 								|| "9".equals(isremark)) {
@@ -685,12 +685,12 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveTodoRequestByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 
 						} else if ("2".equals(isremark)) {
-							writeLog("已办参数:" + syscode + " " + requestid + " "
-									+ flowtitle + " " + workflowname + " "
-									+ flownodename + " " + receiver_loginid);
+							//writeLog("已办参数:" + syscode + " " + requestid + " "
+							//		+ flowtitle + " " + workflowname + " "
+							//		+ flownodename + " " + receiver_loginid);
 							String viewtype = "1";
 							Map<String, String> dataMap = buildDataMap(syscode,
 									requestid, flowtitle, workflowname, flownodename,
@@ -700,7 +700,7 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveRequestInfoByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 
 						}
 						
@@ -769,7 +769,7 @@ public class PostWorkflowInf extends BaseBean {
 					.buildDataArray(dataMap1);
 			AnyType2AnyTypeMapEntry[] resultArray1 = OfsClient.getClient()
 					.deleteRequestInfoByMap(dataArray1);
-			OfsClient.printResultArray(resultArray1);
+			//OfsClient.printResultArray(resultArray1);
 
 			// 查询操作记录,将currentoperator表中剩余的记录推到待办库中
 			RecordSet rs3 = new RecordSet();
@@ -831,7 +831,7 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveTodoRequestByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 						}
 						if ("1".equals(isremark) || "8".equals(isremark)
 								|| "9".equals(isremark)) {
@@ -844,12 +844,12 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveTodoRequestByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 
 						} else if ("2".equals(isremark)) {
-							writeLog("已办参数:" + syscode + " " + requestid + " "
-									+ flowtitle + " " + workflowname + " "
-									+ flownodename + " " + receiver_loginid);
+							//writeLog("已办参数:" + syscode + " " + requestid + " "
+							//		+ flowtitle + " " + workflowname + " "
+							//		+ flownodename + " " + receiver_loginid);
 							String viewtype = "1";
 							// 已办事宜 往统一待办库发已办消息
 							/*
@@ -869,7 +869,7 @@ public class PostWorkflowInf extends BaseBean {
 									.buildDataArray(dataMap);
 							AnyType2AnyTypeMapEntry[] resultArray = OfsClient
 									.getClient().receiveRequestInfoByMap(dataArray);
-							OfsClient.printResultArray(resultArray);
+							//OfsClient.printResultArray(resultArray);
 
 						}
 					}

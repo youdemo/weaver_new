@@ -123,7 +123,9 @@ public class MoveISODoc {
 				 source = Util.null2String(rsd.getString("source"));
 				 log.writeLog("文件 路径OriginalName"+OriginalName+" source"+source);
 				 if(!"".equals(source)&&!"".equals(OriginalName)){
-					 source = "\\\\10.9.2.57"+source.substring(13,source.length());
+					 int length=13;
+					 length=source.indexOf("\\Object");
+					 source = "\\\\10.9.2.57"+source.substring(length,source.length());
 					 log.writeLog("source"+source);
 					 DocAttachment doca = getDocAttachment(source,OriginalName);
 					 docs[num]=doca;

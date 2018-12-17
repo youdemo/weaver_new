@@ -49,6 +49,11 @@ public class UpdateContractNo implements Action{
 		if("S".equals(gxhtbhzt)){
 			return SUCCESS;
 		}
+		if("".equals(fpyzh)){
+			sql = "update "+tableName+" set gxhtbhzt='S' where requestid="+requestid;
+			rs.executeSql(sql);
+			return SUCCESS;
+		}
 		JSONArray array = new JSONArray();
 		JSONObject head = new JSONObject();
 		try {

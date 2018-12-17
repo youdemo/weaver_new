@@ -80,7 +80,7 @@ public class DoZZImpl {
 			dtid = Util.null2String(rs.getString("id"));
 			zzje_dt1 = Util.null2String(rs.getString("zzje")).replaceAll(",", "");
 			kmbm_dt1 = Util.null2String(rs.getString("kmbm"));
-			zzsm_dt1 = Util.null2String(rs.getString("zzsm")); 
+			zzsm_dt1 = Util.null2String(rs.getString("zzsm")).replace("<br/>", "").replace("<br>", "").replace("</br>", ""); 
 			money= iu.add(money, zzje_dt1);
 			mapStr.put("SEGMENT2", "0000");//项目码
 			mapStr.put("SEGMENT3", "000");//地区码

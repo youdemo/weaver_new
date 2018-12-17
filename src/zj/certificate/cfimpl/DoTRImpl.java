@@ -137,7 +137,7 @@ public class DoTRImpl {
 			kpf_dt1 = Util.null2String(rs.getString("kpf"));
 			ccrq_dt1 = Util.null2String(rs.getString("ccrq"));
 			jsrq_dt1 = Util.null2String(rs.getString("jsrq"));
-			nr_dt1 = Util.null2String(rs.getString("nr"));
+			nr_dt1 = Util.null2String(rs.getString("nr")).replace("<br/>", "").replace("<br>", "").replace("</br>", "");
 			jxsbm_dt1 = Util.null2String(rs.getString("jxsbm"));
 			se_dt1 = Util.null2String(rs.getString("se")).replaceAll(",", "");
 			if("0".equals(fykm_dt1)){

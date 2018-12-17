@@ -74,16 +74,10 @@ public class TmcDBUtil {
 			String tmp_1_str = mapStr.get(tmp_1);
 			if(tmp_1_str == null) tmp_1_str = "";
 				
-			if(tmp_1_str.length() > 0){
-				buff.append(flag);buff.append(tmp_1);buff.append("=");
-					
-				if(tmp_1_str.contains("##")){
-					buff.append(tmp_1_str.replace("##", ""));
-				}else{
-					buff.append("'");buff.append(tmp_1_str);buff.append("'");
-				}
-				flag = ",";
-			}
+			buff.append(flag);buff.append(tmp_1);buff.append("=");
+			buff.append("'");buff.append(tmp_1_str);buff.append("'");
+			flag = ",";
+			
 		}
 		String whereSql = " where 1=1 ";
 		Iterator<String> itx = whereMap.keySet().iterator();
@@ -101,16 +95,14 @@ public class TmcDBUtil {
 		return rs.executeSql(sql);
 	}
 	
-	//  ±íµ¥½¨Ä£
+
 	public boolean insertGs(int creater,int modeid,int m_billid){
 		ModeRightInfo ModeRightInfo = new ModeRightInfo();
-		ModeRightInfo.editModeDataShare(creater,modeid,m_billid);//ĞÂ½¨µÄÊ±ºòÌí¼Ó¹²Ïí
+		ModeRightInfo.editModeDataShare(creater,modeid,m_billid);//ï¿½Â½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½
 		return true;
 	}
 	
-	// Á÷Ë®±àÂë   ±íÃû  uf_tmcCode¡¾numF£¬×ÖÄ¸±êÊ¾£»codeF£¬±àÂë±êÊ¾£»yearM£¬ÄêÔÂ£»nextN£¬ÏÂÒ»¸ö±àºÅ¡¿
 	
-	// yearM ¸ñÊ½  201605 
 	public String getNowCode(String code,String flag,String yearM){
 		RecordSet rs = new RecordSet();
 		String sql = "select * from uf_tmcCode where codef='"+code

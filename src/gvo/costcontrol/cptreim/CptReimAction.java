@@ -54,6 +54,8 @@ public class CptReimAction implements Action{
 		String bccxyfkje = "";//本次冲销预付款金额
 		String yfdh = "";//预付单号
 		String sap_bz = "";
+		String bhsje = "";//本次报销未税金额（CNY）
+		String se = "";//本次报销未税金额（CNY）
 		sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = "
 				+ workflowID + ")";
 		rs.execute(sql);
@@ -107,6 +109,8 @@ public class CptReimAction implements Action{
 			fykmbm = Util.null2String(rs.getString("fykmbm"));
 			zzch = Util.null2String(rs.getString("zzch"));
 			bcbxe = Util.null2String(rs.getString("bcbxe"));
+			bhsje = Util.null2String(rs.getString("bhsje"));
+			se = Util.null2String(rs.getString("se"));
 			fphm = Util.null2String(rs.getString("fphm"));
 			JSONObject jo = new JSONObject();
 			try {
@@ -115,12 +119,18 @@ public class CptReimAction implements Action{
 				jo.put("I_HKONT",fykmbm);
 				jo.put("I_KOSTL", "");
 				jo.put("I_AUFNR", "");
-				jo.put("I_WRBTR", bcbxe);
 				jo.put("I_ZUONR",bxdh);
 				jo.put("I_SGTXT", syjs);
 				jo.put("I_PERSON", "");
 				jo.put("I_ANLN1", zzch);
 				jo.put("I_ANLN2", "0000");
+				if(!"CNY".equals(bz)){
+					jo.put("I_WRBTR", bcbxe);
+					jo.put("I_TAXAMOUNT", "0");
+				}else{
+					jo.put("I_WRBTR", bhsje);
+					jo.put("I_TAXAMOUNT", se);
+				}
 				array1.put(jo);
 			} catch (JSONException e) {
 				log.writeLog("array1异常");
@@ -157,7 +167,7 @@ public class CptReimAction implements Action{
 			head.put("I_XNLNR",bxdh);
 			head.put("I_TAX",sfpz);
 			head.put("I_PERSON","");//sqr
-			head.put("I_UMSKZ","");//zzbs
+			head.put("I_UMSKZ",zzbs);//zzbs
 			head.put("IT_ITEM", array1);
 			head.put("IT_ITEM2", array2);
 		} catch (JSONException e) {

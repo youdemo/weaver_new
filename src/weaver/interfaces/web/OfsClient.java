@@ -48,7 +48,7 @@ public class OfsClient extends BaseBean {
 		//遍历map中的键  
 		for (int i=0;i<resultArray.length;i++) {  
 //			System.out.println("key="+resultArray[i].getKey()+" , value="+resultArray[i].getValue());
-			new BaseBean().writeLog("key="+resultArray[i].getKey()+" , value="+resultArray[i].getValue());
+//			new BaseBean().writeLog("key="+resultArray[i].getKey()+" , value="+resultArray[i].getValue());
 		} 
 		new BaseBean().writeLog("---------------------分割线----------------------");
 	}

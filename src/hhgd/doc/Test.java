@@ -14,11 +14,14 @@ public class Test {
 	
 	
 	public static void main(String args[]){
-		String aa="\\\\T1oainfra02\\Object\\ISO\\Attach2\\ISO_Attach_Modify_2018111115050_97518.pptx";
-		aa="\\\\10.9.2.57"+aa.substring(13,aa.length());
+		String aa="D:\\Inetpub\\WWWRoot\\isoDMS.Net\\Object\\ISO2\\Attach2\\ISO_Attach_Modify_38824.pdf";
+		int length = 0;
+		 length=aa.indexOf("\\Object");
+		 System.out.println();
+		aa="\\\\10.9.2.57"+aa.substring(length,aa.length());
 		System.out.println(aa);
-		String name="aaa";
-		System.out.println(name.substring(0, name.lastIndexOf(".")));
+		//String name="aaa";
+		//System.out.println(name.substring(0, name.lastIndexOf(".")));
 	}
 	private String getDocId(String name, String value,String createrid,String seccategory) throws Exception {
 		String docId = "";

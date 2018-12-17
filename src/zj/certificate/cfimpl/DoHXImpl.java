@@ -39,7 +39,7 @@ public class DoHXImpl {
 			bb = geCurrencyCode(Util.null2String(rs.getString("bb")));
 			dfkm = Util.null2String(rs.getString("dfkm"));
 			hl = Util.null2String(rs.getString("hl"));
-			hxsm = Util.null2String(rs.getString("hxsm"));
+			hxsm = Util.null2String(rs.getString("hxsm")).replace("<br/>", "").replace("<br>", "").replace("</br>", "");
 		}
 		if("".equals(hxsm)){
 			hxsm = " ";
