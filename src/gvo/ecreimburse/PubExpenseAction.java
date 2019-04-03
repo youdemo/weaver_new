@@ -48,6 +48,9 @@ public class PubExpenseAction implements Action {
 		String JZDM = "21";// 固定值21
 		String SYSTEM_TYPE = "0";// 固定值0
 		String sfpz = "0";// 固定值0
+		String sapReturnStatus = "";
+		String status = "";
+		String amtcorp = "";
 		sql = " Select tablename From Workflow_bill Where id in ( Select formid From workflow_base Where id= "
 				+ workflowID + ")";
 
@@ -77,8 +80,17 @@ public class PubExpenseAction implements Action {
 					ABS = ABS.substring(0, 50);
 				}
 				WISH_PAY_DAY = Util.null2String(rs.getString("reqdate"));
+				sapReturnStatus = Util.null2String(rs.getString("sapReturnStatus"));
+				status = Util.null2String(rs.getString("status"));
+				amtcorp = Util.null2String(rs.getString("amtcorp"));
 			}
-
+			if(!"S".equals(sapReturnStatus)){
+	            return SUCCESS;
+	        }
+			if("S".equals(status)){
+	            return SUCCESS;
+	        }
+			if("82".equals(amtcorp) || "83".equals(amtcorp) || "84".equals(amtcorp)) {
 			try {
 				JSONObject head = new JSONObject();
 				JSONArray jsonArray = new JSONArray();
@@ -168,6 +180,7 @@ public class PubExpenseAction implements Action {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
 			}
 
 		} else {

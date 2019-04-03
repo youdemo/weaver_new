@@ -83,7 +83,9 @@ public class ContractPayAction implements Action {
 				CUR = Util.null2String(rs.getString("htjebz"));
 				ITEM_CODE = Util.null2String(rs.getString("kmbm"));
 				RMK = Util.null2String(rs.getString("htbh"));
+				GYSDM = Util.null2String(rs.getString("gysbm2"));
 				ABS = Util.null2String(rs.getString("fksy"));
+				ABS = GYSDM + "/" + RMK.replace("-", "") + "*@" + ABS;
 				if (ABS.length() >= 50) {
 					ABS = ABS.substring(0, 50);
 				}
@@ -100,7 +102,9 @@ public class ContractPayAction implements Action {
 
 				WISH_PAY_DAY = Util.null2String(rs.getString("sqrq"));
 				AMT = Util.null2String(rs.getString("bcfkje"));
-				GYSDM = Util.null2String(rs.getString("gysbm2"));
+				if("".equals(AMT)){
+					AMT = "0";
+				}
 				PAYEE_NAME = Util.null2String(rs.getString("hm"));
 				PAYEE_BANK = Util.null2String(rs.getString("khh"));
 				PAYEE_ACC_NO = Util.null2String(rs.getString("skzh"));

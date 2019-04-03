@@ -1,9 +1,14 @@
 package goodbaby.test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.axis.encoding.Base64;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import com.informix.util.stringUtil;
 
 import sun.misc.BASE64Decoder;
 import weaver.conn.RecordSet;
@@ -15,20 +20,20 @@ import weaver.hrm.User;
 
 public class Test {
 	public static void main(String args[]){
-		Document document = DocumentHelper.createDocument();  
-        Element rootElement = document.addElement("test");  
-        rootElement.setAttributeValue("aaa", "ccc");
-        Element empName = rootElement.addElement("id");  
-        empName.setText("1");  
-        Element empAge = rootElement.addElement("requestid");  
-        empAge.setText("122");  
-        Element empTitle = rootElement.addElement("workflowID");  
-        empTitle.setText("133"); 
-        document.setXMLEncoding()
-        String text=document.asXML();
-        System.out.println(text);
+		String aa = "201807_1_92";
+		aa.split("_");
+		System.out.println(aa.split("_")[0]);
+		System.out.println(new Date().getTime());
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		String nowyear = sf.format(new Date());
+		System.out.println(nowyear);
+		String scids="123,12,";
+		String fkids[] = scids.split(",");
+		
+		for(String fkid:fkids) {
+			System.out.println(fkid);
+		}
 	}
-	
 	private String getDocId(String name, String value,String createrid,String seccategory) throws Exception {
 		String docId = "";
 		DocInfo di= new DocInfo();

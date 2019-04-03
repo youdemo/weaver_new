@@ -25,6 +25,7 @@ public class GetDCPRequestMarkServiceImpl {
 		String tablename = "";
 		String requestid = "";
 		JSONArray arr = new JSONArray();
+		JSONArray arrUndo = new JSONArray();
 		sql = "select bm from uf_dcp_workflow_map where bs='DCPYS'";
 		rs.executeSql(sql);
 		if (rs.next()) {
@@ -33,7 +34,7 @@ public class GetDCPRequestMarkServiceImpl {
 		if ("".equals(tablename)) {
 			retMap.put("MSG_TYPE", "E");
 			retMap.put("MSG_CONTENT", "流程表单无法匹配");
-			return getJsonStr(retMap, arr);
+			return getJsonStr(retMap, arr,arrUndo);
 		}
 		sql = "select a.requestid from " + tablename
 				+ " a,workflow_requestbase b where a.requestid=b.requestid and a.DCPID='" + DCPID + "'";
@@ -44,7 +45,7 @@ public class GetDCPRequestMarkServiceImpl {
 		if ("".equals(requestid)) {
 			retMap.put("MSG_TYPE", "E");
 			retMap.put("MSG_CONTENT", "传入的DCPID匹配不到有效的流程");
-			return getJsonStr(retMap, arr);
+			return getJsonStr(retMap, arr,arrUndo);
 		}
 		
 		try {
@@ -54,13 +55,34 @@ public class GetDCPRequestMarkServiceImpl {
 			log.writeLog(e);
 			retMap.put("MSG_TYPE", "E");
 			retMap.put("MSG_CONTENT", "凭借审批意见出错");
-			return getJsonStr(retMap, arr);
+			return getJsonStr(retMap, arr,arrUndo);
+		}
+		try {
+			arrUndo=getCurrentOperate(requestid);
+		} catch (Exception e) {
+			log.writeLog("GetDCPRequestMarkServiceImpl");
+			log.writeLog(e);
+			retMap.put("MSG_TYPE", "E");
+			retMap.put("MSG_CONTENT", "获取未操作者出错");
+			return getJsonStr(retMap, arr,arrUndo);
 		}
 		retMap.put("MSG_TYPE", "S");
 		retMap.put("MSG_CONTENT", "");
-		return getJsonStr(retMap, arr);
+		return getJsonStr(retMap, arr,arrUndo);
 	}
-
+	
+	public JSONArray getCurrentOperate(String requestid) throws Exception {
+		JSONArray arr = new JSONArray();
+		RecordSet rs = new RecordSet();
+		String sql = "select distinct b.workcode from workflow_currentoperator a,hrmresource b where a.userid=b.id and requestid ='"+requestid+"' and isremark not in(2,4)";
+		rs.executeSql(sql);
+		while(rs.next()) {
+			JSONObject jo = new JSONObject();
+			jo.put("workcode", Util.null2String(rs.getString("workcode")));
+			arr.put(jo);
+		}
+		return arr;
+	}
 	/**
 	 * 获取返回值json串
 	 * 
@@ -68,7 +90,7 @@ public class GetDCPRequestMarkServiceImpl {
 	 * @param arr 意见json数组
 	 * @return
 	 */
-	private String getJsonStr(Map<String, String> map, JSONArray arr) {
+	private String getJsonStr(Map<String, String> map, JSONArray arr,JSONArray arrUndo) {
 		JSONObject json = new JSONObject();
 		Iterator<String> it = map.keySet().iterator();
 		try {
@@ -78,6 +100,7 @@ public class GetDCPRequestMarkServiceImpl {
 				json.put(key, value);
 			}
 			json.put("JSONSTR", arr);
+			json.put("UNDOJSON", arrUndo);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

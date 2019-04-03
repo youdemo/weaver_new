@@ -37,6 +37,7 @@ public class TravelFeeAction extends BaseBean implements Action {
         String VOUCHERTYPE = "ZE";//凭证类型
         String VOUCHERSPUN = "X";//是否抛转
         String NBDDH  = "";//内部订单号
+        String E_STATUS = "";
         sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = " + workflowID + ")";
         rs.execute(sql);
 //        log.writeLog(sql);
@@ -55,14 +56,18 @@ public class TravelFeeAction extends BaseBean implements Action {
 //            log.writeLog("tableNamedt1=" + tableNamedt);
             rs.execute(sql);
             if(rs.next()) {
+            	REQCODE = getWorkcode(res,Util.null2String(rs.getString("bxr")));
                 mainID = Util.null2String(rs.getString("id"));
                 CORPCODE = Util.null2String(rs.getString("corpcode"));
-                REQCODE = Util.null2String(rs.getString("reqpsncode"));
                 CURRTYPE_DES = Util.null2String(rs.getString("currencydesc"));
                 FYBXSM = Util.null2String(rs.getString("remark1"));
                 FLOWNO = Util.null2String(rs.getString("flowno"));
                 REQNAME = Util.null2String(rs.getString("amtpsnname"));
                 NBDDH = Util.null2String(rs.getString("nbddh"));
+                E_STATUS = Util.null2String(rs.getString("E_STATUS"));
+            }
+            if("S".equals(E_STATUS)){
+            	return SUCCESS;
             }
             //查询明细表1
             sql = "select * from " + tableNamedt1 + " where mainid= " + mainID;
@@ -73,7 +78,7 @@ public class TravelFeeAction extends BaseBean implements Action {
                 String ACCOUNTCODE = "40";//记账代码
                 String FYKMBM = Util.null2String(rs.getString("budgetsubjcode"));//预算科目编码
                 String CBZXBM = Util.null2String(rs.getString("costcentercode"));//成本中心编码
-                String EXPENSEAMT = Util.null2String(rs.getString("eeramt"));//预算报销金额
+                String EXPENSEAMT = Util.null2String(rs.getString("eeramount"));//预算报销未税金额
                 String TAX = Util.null2String(rs.getString("tax"));//税额
                 try {
                     json1.put("ACCOUNTCODE", ACCOUNTCODE);
@@ -160,4 +165,14 @@ public class TravelFeeAction extends BaseBean implements Action {
         }
         return SUCCESS;
     }
+    //查询数据库，返回报销人编号
+  	private String getWorkcode(RecordSet res,String hrmid) {
+  		String code = "";
+  		String sql = "select workcode from hrmresource where id=" + hrmid;
+  		res.execute(sql);
+  		if(res.next()){
+  			code = Util.null2String(res.getString("workcode"));
+  		}
+  		return code;
+  	}
 }

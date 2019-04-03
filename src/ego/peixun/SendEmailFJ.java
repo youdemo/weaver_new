@@ -7,8 +7,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.zip.ZipInputStream;
+
+import javax.mail.internet.MimeUtility;
 
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
@@ -67,6 +70,14 @@ public class SendEmailFJ {
 			filerealpath = Util.null2String(rs.getString("filerealpath"));
 			iszip = Util.null2String(rs.getString("iszip"));
 			name = Util.null2String(rs.getString("imagefilename"));
+			//中文名称转换
+			//try {
+			//	String attachname = new String(name.getBytes("ISO8859_1"),"UTF-8");
+			//	attachname = MimeUtility.encodeWord(attachname);
+			//} catch (Exception e1) {
+				// TODO Auto-generated catch block
+			//	e1.printStackTrace();
+			//}
 			if (filerealpath.length() > 0) {
 
 				try {

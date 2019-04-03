@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ibm.db2.jcc.am.id;
-import com.ibm.db2.jcc.am.t;
-
 import weaver.conn.RecordSet;
 import weaver.conn.RecordSetDataSource;
 import weaver.general.BaseBean;
@@ -658,31 +655,40 @@ public class CreateCertificate {
 		mapStr.put("interface_seq", getInterfaceSeq());
 		mapStr.put("CURRENCY_CODE", bz);
 		
+		mapStr.put("SEGMENT1", SEGMENT1);//
+		mapStr.put("SEGMENT2", "0000");//项目码
+		mapStr.put("SEGMENT3", "000");//地区码
+		mapStr.put("SEGMENT4", "0000");//部门码
+		mapStr.put("REFERENCE1","OA"+pch);
+		mapStr.put("REFERENCE4","OA"+pch);
+		mapStr.put("SEGMENT5", bm);//科目
 		
 		if(rqcount >1){
-			if(Util.getFloatValue(getMoney(wb))<0){
-				mapStr.put("ENTERED_CR", "");
-				if("USD".equals(bz)){
-				mapStr.put("ACCOUNTED_CR", "");
+			if(Util.getFloatValue(getMoney(wb),0)!= 0 || Util.getFloatValue(getMoney(rmb),0)!= 0) {
+				if(Util.getFloatValue(getMoney(wb))<0){
+					mapStr.put("ENTERED_CR", "");
+					if("USD".equals(bz)){
+					mapStr.put("ACCOUNTED_CR", "");
+					}
+					mapStr.put("ENTERED_DR", getMoney(wb).replace("-", ""));
+					if("USD".equals(bz)){
+					mapStr.put("ACCOUNTED_DR", getMoney(rmb).replace("-", ""));
+					}
+				}else{
+					mapStr.put("ENTERED_CR", getMoney(wb));
+					if("USD".equals(bz)){
+					mapStr.put("ACCOUNTED_CR", getMoney(rmb));
+					}
 				}
-				mapStr.put("ENTERED_DR", getMoney(wb).replace("-", ""));
-				if("USD".equals(bz)){
-				mapStr.put("ACCOUNTED_DR", getMoney(rmb).replace("-", ""));
-				}
-			}else{
-				mapStr.put("ENTERED_CR", getMoney(wb));
-				if("USD".equals(bz)){
-				mapStr.put("ACCOUNTED_CR", getMoney(rmb));
-				}
+				mapStr.put("REFERENCE2", "支付报销款");
+				mapStr.put("REFERENCE5","支付报销款");
+				mapStr.put("REFERENCE10", "支付报销款");
+	
+				mapStr.put("REFERENCE30", interfaceseq+"");
+				 interfaceseq= interfaceseq+10;
+				mapStr.put("GROUP_ID",pch);
+				iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
 			}
-			mapStr.put("REFERENCE2", "支付报销款");
-			mapStr.put("REFERENCE5","支付报销款");
-			mapStr.put("REFERENCE10", "支付报销款");
-
-			mapStr.put("REFERENCE30", interfaceseq+"");
-			 interfaceseq= interfaceseq+10;
-			mapStr.put("GROUP_ID",pch);
-			iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
 		}else{
 			if("57".equals(workflowId)||"70".equals(workflowId)||"71".equals(workflowId)||"61".equals(workflowId)){
 				mapStr.put("ENTERED_CR", getMoney(wb));

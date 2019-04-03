@@ -48,6 +48,9 @@ public class TravelReimAction implements Action {
 		String JZDM = "21";// 固定值21
 		String SYSTEM_TYPE = "0";// 固定值0
 		String sfpz = "0";// 固定值0
+		String E_STATUS = "";
+		String status = "";
+		String ssgs = "";
 		sql = " Select tablename From Workflow_bill Where id in ( Select formid From workflow_base Where id= "
 				+ workflowID + ")";
 
@@ -76,8 +79,17 @@ public class TravelReimAction implements Action {
 					ABS = ABS.substring(0, 50);
 				}
 				WISH_PAY_DAY = Util.null2String(rs.getString("reqdate"));
+				E_STATUS = Util.null2String(rs.getString("E_STATUS"));
+				status = Util.null2String(rs.getString("status"));
+				ssgs = Util.null2String(rs.getString("ssgs"));
 			}
-
+			if(!"S".equals(E_STATUS)) {
+				return SUCCESS;
+			}
+			if("S".equals(status)) {
+				return SUCCESS;
+			}
+			if("82".equals(ssgs) || "83".equals(ssgs) || "84".equals(ssgs)) {
 			try {
 				JSONObject head = new JSONObject();
 				JSONArray jsonArray = new JSONArray();
@@ -167,6 +179,7 @@ public class TravelReimAction implements Action {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
 			}
 
 		} else {

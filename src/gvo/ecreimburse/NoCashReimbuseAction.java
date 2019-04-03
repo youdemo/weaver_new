@@ -60,7 +60,7 @@ public class NoCashReimbuseAction implements Action {
 		String SYSTEM_TYPE = "0";// 固定值1
 		String PAYTYPE = "";// 结算方式
 		String sfpz = "";// 是否生成凭证
-		String abs = "";//截取ABS字符长度
+		String wllb = "";//物料类别
 		sql = " Select tablename From Workflow_bill Where id in ( Select formid From workflow_base Where id= "
 				+ workflowID + ")";
 		rs.execute(sql);
@@ -82,9 +82,6 @@ public class NoCashReimbuseAction implements Action {
 				CUR = Util.null2String(rs.getString("currency"));
 				ITEM_CODE = Util.null2String(rs.getString("kmbm"));
 				ABS = Util.null2String(rs.getString("sy"));
-				if (ABS.length() >= 50) {
-					abs = ABS.substring(0, 50);
-				}
 				VOUCHER_TYPE = Util.null2String(rs.getString("fkfs"));
 				PAYTYPE = Util.null2String(rs.getString("jsfs"));
 				if (PAYTYPE.equals("0")) {
@@ -98,7 +95,14 @@ public class NoCashReimbuseAction implements Action {
 				WISH_PAY_DAY = Util.null2String(rs.getString("sqrq"));
 //				JZDM = Util.null2String(rs.getString("jzdm"));
 				AMT = Util.null2String(rs.getString("bcfke"));
+				if("".equals(AMT)){
+					AMT = "0";
+				}
 				GYSDM = Util.null2String(rs.getString("gysbm"));
+				ABS = GYSDM + "/*@" + ABS;
+				if (ABS.length() >= 50) {
+					ABS = ABS.substring(0, 50);
+				}
 				PAYEE_NAME = Util.null2String(rs.getString("gys"));
 				PAYEE_BANK = Util.null2String(rs.getString("yhmc"));
 				PAYEE_ACC_NO = Util.null2String(rs.getString("yhzh"));
@@ -109,84 +113,93 @@ public class NoCashReimbuseAction implements Action {
 				ZZKM = Util.null2String(rs.getString("zzkm"));
 				ISFORINDIVIDUAL = Util.null2String(rs.getString("gsbz"));
 				sfpz = Util.null2String(rs.getString("sfpz"));
+				wllb = Util.null2String(rs.getString("wllb"));
 			}
-			String sqlpara = "";
-			sqlpara = " select bzdm from uf_currency where id= " + CUR;
-			rs.executeSql(sqlpara);
-			if (rs.next()) {
-				CUR = Util.null2String(rs.getString("bzdm"));
-			}
-			JSONArray jsonArray = new JSONArray();
-			try {
-
-				JSONObject jsonObjSon = new JSONObject();
-
-				jsonObjSon.put("serial_no_erp", SERIAL_NO_ERP);
-				jsonObjSon.put("req_date", REQ_DATE);
-				jsonObjSon.put("corp_code", CORP_CODE);
-				jsonObjSon.put("payer_acc_no", PAYER_ACC_NO);
-				jsonObjSon.put("cur", CUR);
-				jsonObjSon.put("item_code", ITEM_CODE);
-				jsonObjSon.put("zzbs", ZZBS);
-				jsonObjSon.put("rmk", RMK);
-				jsonObjSon.put("abs", abs);
-				jsonObjSon.put("voucher_type", VOUCHER_TYPE);
-				jsonObjSon.put("wish_pay_day", WISH_PAY_DAY);
-				jsonObjSon.put("zzkm", ZZKM);
-				jsonObjSon.put("jzdm", JZDM);
-				jsonObjSon.put("system_type", SYSTEM_TYPE);
-
-				jsonObjSon.put("fkyydm", FKYYDM);
-				jsonObjSon.put("purpose", PURPOSE);
-				jsonObjSon.put("amt", AMT);
-				jsonObjSon.put("gysdm", GYSDM);
-				jsonObjSon.put("payee_name", PAYEE_NAME);
-				jsonObjSon.put("payee_bank", PAYEE_BANK);
-				jsonObjSon.put("payee_acc_no", PAYEE_ACC_NO);
-				jsonObjSon.put("payee_code", PAYEE_CODE);
-				jsonObjSon.put("isforindividual", ISFORINDIVIDUAL);
-				jsonObjSon.put("urgency_flag", URGENCY_FLAG);
-				jsonObjSon.put("sfpz", sfpz);
-				jsonArray.put(jsonObjSon);
-
-			} catch (Exception e) {
-				log.writeLog("json拼接错误");
-			}
-			JSONObject head = new JSONObject();
-			try {
-				head.put("bean", jsonArray);
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
-			ECPayXmlUtil tran = new ECPayXmlUtil();
-			String json = tran.javaToXml("", "", requestid, head.toString());
-			log.writeLog("打印json————————" + json);
-			HnPayWebService pay = new HnPayWebService();
-			String sign = "";
-			String message = "";
-			try {
-				Response result = pay.getResultMethod(json);
-				sign = result.getSIGN();
-				message = result.getMessage();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
-			String para = "message";
-			Map<String, Object> result = saxXmlUtil.getXmlMap(message);
-			Object mess = result.get(para);//提示信息
-			if(mess.toString().length() >=50 ){
-				mess = mess.toString().substring(0,50);
-			}
-			log.writeLog("状态和消息------"+sign +"," +mess);
-			String sql_update = "update " + tableName + " set status='" + sign + "',message='" + mess + "' where requestid=" + requestid;
-			rs.execute(sql_update);
-			log.writeLog("错误信息2————————" + sql_update);
-			if ("F".equals(sign)) {
-				// 调用异常 返回错误信息
-				info.getRequestManager().setMessageid(System.currentTimeMillis() + "");
-				info.getRequestManager().setMessagecontent(mess.toString());
-				return SUCCESS;
+			if(wllb.equals("4")){
+				String sql_gz = "update " + tableName + " set status='S',message='工资请款流程，不调用资金接口' where requestid=" + requestid;
+				rs.execute(sql_gz);
+			}else if(CORP_CODE.equals("2400")){
+				String sql_gsdm = "update " + tableName + " set status='S',message='公司代码=2400，不调用资金接口' where requestid=" + requestid;
+				rs.execute(sql_gsdm);
+			}else{
+				String sqlpara = "";
+				sqlpara = " select bzdm from uf_currency where id= " + CUR;
+				rs.executeSql(sqlpara);
+				if (rs.next()) {
+					CUR = Util.null2String(rs.getString("bzdm"));
+				}
+				JSONArray jsonArray = new JSONArray();
+				try {
+		
+					JSONObject jsonObjSon = new JSONObject();
+		
+					jsonObjSon.put("serial_no_erp", SERIAL_NO_ERP);
+					jsonObjSon.put("req_date", REQ_DATE);
+					jsonObjSon.put("corp_code", CORP_CODE);
+					jsonObjSon.put("payer_acc_no", PAYER_ACC_NO);
+					jsonObjSon.put("cur", CUR);
+					jsonObjSon.put("item_code", ITEM_CODE);
+					jsonObjSon.put("zzbs", ZZBS);
+					jsonObjSon.put("rmk", RMK);
+					jsonObjSon.put("abs", ABS);
+					jsonObjSon.put("voucher_type", VOUCHER_TYPE);
+					jsonObjSon.put("wish_pay_day", WISH_PAY_DAY);
+					jsonObjSon.put("zzkm", ZZKM);
+					jsonObjSon.put("jzdm", JZDM);
+					jsonObjSon.put("system_type", SYSTEM_TYPE);
+		
+					jsonObjSon.put("fkyydm", FKYYDM);
+					jsonObjSon.put("purpose", PURPOSE);
+					jsonObjSon.put("amt", AMT);
+					jsonObjSon.put("gysdm", GYSDM);
+					jsonObjSon.put("payee_name", PAYEE_NAME);
+					jsonObjSon.put("payee_bank", PAYEE_BANK);
+					jsonObjSon.put("payee_acc_no", PAYEE_ACC_NO);
+					jsonObjSon.put("payee_code", PAYEE_CODE);
+					jsonObjSon.put("isforindividual", ISFORINDIVIDUAL);
+					jsonObjSon.put("urgency_flag", URGENCY_FLAG);
+					jsonObjSon.put("sfpz", sfpz);
+					jsonArray.put(jsonObjSon);
+		
+				} catch (Exception e) {
+					log.writeLog("json拼接错误");
+				}
+				JSONObject head = new JSONObject();
+				try {
+					head.put("bean", jsonArray);
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
+				ECPayXmlUtil tran = new ECPayXmlUtil();
+				String json = tran.javaToXml("", "", requestid, head.toString());
+				log.writeLog("打印json————————" + json);
+				HnPayWebService pay = new HnPayWebService();
+				String sign = "";
+				String message = "";
+				try {
+					Response result = pay.getResultMethod(json);
+					sign = result.getSIGN();
+					message = result.getMessage();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
+				String para = "message";
+				Map<String, Object> result = saxXmlUtil.getXmlMap(message);
+				Object mess = result.get(para);//提示信息
+				if(mess.toString().length() >=50 ){
+					mess = mess.toString().substring(0,50);
+				}
+				log.writeLog("状态和消息------"+sign +"," +mess);
+				String sql_update = "update " + tableName + " set status='" + sign + "',message='" + mess + "' where requestid=" + requestid;
+				rs.execute(sql_update);
+				log.writeLog("错误信息2————————" + sql_update);
+				if ("F".equals(sign)) {
+					// 调用异常 返回错误信息
+					info.getRequestManager().setMessageid(System.currentTimeMillis() + "");
+					info.getRequestManager().setMessagecontent(mess.toString());
+					return SUCCESS;
+				}
 			}
 		} else {
 			log.writeLog("流程表信息获取失败!");

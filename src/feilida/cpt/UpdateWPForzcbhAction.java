@@ -1,7 +1,6 @@
 package feilida.cpt;
 
 import weaver.conn.RecordSet;
-import weaver.formmode.setup.ModeRightInfo;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
@@ -41,6 +40,7 @@ public class UpdateWPForzcbhAction implements Action{
 		String id="";
 		String CFDD="";
 		String zcid="";
+		log.writeLog("xzbm:"+xzbm);
 		if(!"68".equals(xzbm)){
 			//从资产模块根据唯一标识更新明细表的资产编号
 			sql="select * from "+tableName+"_dt1 where mainid="+mainID;
@@ -51,27 +51,32 @@ public class UpdateWPForzcbhAction implements Action{
 				CFDD=Util.null2String(rs.getString("CFDD")); 
 				zcid = Util.null2String(rs.getString("zcid")); 
 				int count=0;
-				//log.writeLog("qfid:"+qfid+"id:"+id+"CFDD:"+CFDD+"zcid:"+zcid);
+				log.writeLog("qfid:"+qfid+"id:"+id+"CFDD:"+CFDD+"zcid:"+zcid);
 				if(!"".equals(zcid)){
 					sql_detail="select count(1) as count from cptcapital where id='"+zcid+"'";
-					//log.writeLog("sql_detail"+sql_detail);
+					log.writeLog("sql_detail"+sql_detail);
 					rs_detail.executeSql(sql_detail);
 					if(rs_detail.next()){
 						count = rs_detail.getInt("count");
 					}
 				}
-				//log.writeLog("qfid"+qfid+"count"+count);
+				log.writeLog("qfid"+qfid+"count"+count);
 				if(!"".equals(qfid)&& count<=0){
 					sql_detail="update "+tableName+"_dt1 set ZCBH =(select mark from cptcapital where location='"+qfid+"'),zcid=(select id from cptcapital where location='"+qfid+"') where id="+id;
-					//log.writeLog("sql_detail"+sql_detail);
-					rs_detail.executeSql(sql_detail);
-				    sql_detail="update cptcapital set resourceid='"+shyr+"' ,departmentid='"+shybm+"' ,stateid=2,location='"+CFDD+"' where location='"+qfid+"'";
-				   // log.writeLog("sql_detail"+sql_detail);
-				    rs_detail.executeSql(sql_detail);
+					log.writeLog("sql_detail"+sql_detail);
+					boolean flag=rs_detail.executeSql(sql_detail);
+					if(flag) {
+					    sql_detail="update cptcapital set resourceid='"+shyr+"' ,departmentid='"+shybm+"' ,stateid=2,location='"+CFDD+"' where location='"+qfid+"'";
+					    log.writeLog("sql_detail"+sql_detail);					
+					    rs_detail.executeSql(sql_detail);
+					}else {
+						log.writeLog("更新资产编号异常");
+					}
 				}
 			}
-			log.writeLog("开始资产编号反写结束");
+			
 		}
+		log.writeLog("开始资产编号反写结束");
 		return SUCCESS;
 	}
 

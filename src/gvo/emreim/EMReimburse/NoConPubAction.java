@@ -37,7 +37,7 @@ public class NoConPubAction extends BaseBean implements Action {
         String VOUCHERTYPE = "ZE";//凭证类型
         String VOUCHERSPUN = "";//是否抛转
         String NBDDH  = "";//内部订单号
-
+        String sapReturnStatus = "";
         sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = " + workflowID + ")";
         rs.execute(sql);
 //        log.writeLog(sql);
@@ -67,7 +67,13 @@ public class NoConPubAction extends BaseBean implements Action {
                 REQNAME = Util.null2String(rs.getString("reqname"));
                 NBDDH = Util.null2String(rs.getString("nbddh"));
                 VOUCHERSPUN = Util.null2String(rs.getString("sfpzpz"));
+                sapReturnStatus = Util.null2String(rs.getString("sapReturnStatus"));
             }
+            log.writeLog("NoConPubAction sapReturnStatus:"+sapReturnStatus);
+            if("S".equals(sapReturnStatus)){
+	            return SUCCESS;
+	        }
+            log.writeLog("NoConPubAction doaction:");
             //查询明细表1
             sql = "select * from " + tableNamedt1 + " where mainid= " + mainID;
             rs.execute(sql);
@@ -142,7 +148,7 @@ public class NoConPubAction extends BaseBean implements Action {
 			 	Response result = ems.getResultMethod(json);
 	            sign = result.getSIGN();
 	            message = result.getMessage();
-//                log.writeLog("返回结果sign————————" + sign);
+                log.writeLog("返回结果sign————————" + sign);
 //                log.writeLog("返回结果message————————" + message);
 			} catch (Exception e) {
                 log.writeLog("错误日志----" + e.getMessage());

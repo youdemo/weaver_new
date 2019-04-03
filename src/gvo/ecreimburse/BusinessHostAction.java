@@ -48,6 +48,9 @@ public class BusinessHostAction implements Action {
 		String JZDM = "21";// 固定值21
 		String SYSTEM_TYPE = "0";// 固定值0
 		String sfpz = "0";// 固定值0
+		String sapReturnStatus = "";
+		String status = "";
+		String fycdfb1 = "";
 		sql = " Select tablename From Workflow_bill Where id in ( Select formid From workflow_base Where id= " + workflowID + ")";
 
 		rs.execute(sql);
@@ -63,7 +66,7 @@ public class BusinessHostAction implements Action {
 
 			sql = "select * from " + tableName + " where requestid="
 					+ requestid;
-			log.writeLog("tableNamedt=" + tableNamedt);
+			//log.writeLog("tableNamedt=" + tableNamedt);
 			rs.execute(sql);
 			if (rs.next()) {
 				mainID = Util.null2String(rs.getString("ID"));
@@ -74,100 +77,110 @@ public class BusinessHostAction implements Action {
 				CUR = tran.getCurrencytype(CUR);
 				RMK = Util.null2String(rs.getString("flowno"));
 				ABS = Util.null2String(rs.getString("fybxsm1"));
+				fycdfb1 = Util.null2String(rs.getString("fycdfb1"));
 				if (ABS.length() >= 50) {
 					ABS = ABS.substring(0, 50);
 				}
 				WISH_PAY_DAY = Util.null2String(rs.getString("reqdate"));
+				sapReturnStatus = Util.null2String(rs.getString("sapReturnStatus"));
+				status = Util.null2String(rs.getString("status"));
 			}
-
-			try {
-				JSONObject head = new JSONObject();
-				JSONArray jsonArray = new JSONArray();
-
-				// 查询明细表
-
-				sql = "select * from " + tableNamedt + " where mainid=" + mainID;
-				rs.execute(sql);
-				log.writeLog("开始————————" + sql);
-				while (rs.next()) {
-					String PAYER_ACC_NO = Util.null2String(rs.getString("fkyhzh2"));// 付款银行账号
-					String ITEM_CODE = Util.null2String(rs.getString("kmbm"));// 资金计划科目编码
-					String AMT = Util.null2String(rs.getString("payamt"));// 收款金额
-					String GYSDM = Util.null2String(rs.getString("hrmcode"));// 单位编号
-					String PAYEE_NAME = Util.null2String(rs.getString("hrmname"));// 员工户名
-					String PAYEE_BANK = Util.null2String(rs.getString("hrmbankname"));// 开户行
-					String PAYEE_ACC_NO = Util.null2String(rs.getString("hrmbankaccount"));// 银行账号
-					String PAYEE_CODE = Util.null2String(rs.getString("hrmbankcode"));// 联行号
-					String FKYYDM = Util.null2String(rs.getString("cashcode2"));// 现金流量代码
-					String PURPOSE = Util.null2String(rs.getString("usage"));// 银行付款用途
-					String VOUCHER_TYPE = Util.null2String(rs.getString("paytype"));// 付款方式
-					VOUCHER_TYPE = tran.getPaytype(VOUCHER_TYPE);
-					String ISFORINDIVIDUAL = Util.null2String(rs.getString("gsbz"));// 对公对私标志
-					String URGENCY_FLAG = Util.null2String(rs.getString("jjbz"));// 加急标志
-
-					JSONObject jsonObjSon = new JSONObject();
-
-					jsonObjSon.put("serial_no_erp", SERIAL_NO_ERP);
-					jsonObjSon.put("req_date", REQ_DATE);
-					jsonObjSon.put("corp_code", CORP_CODE);
-					jsonObjSon.put("payer_acc_no", PAYER_ACC_NO);
-					jsonObjSon.put("cur", CUR);
-					jsonObjSon.put("item_code", ITEM_CODE);
-					jsonObjSon.put("zzbs", ZZBS);
-					jsonObjSon.put("rmk", RMK);
-					jsonObjSon.put("abs", ABS);
-					jsonObjSon.put("voucher_type", VOUCHER_TYPE);
-					jsonObjSon.put("wish_pay_day", WISH_PAY_DAY);
-					jsonObjSon.put("zzkm", ZZKM);
-					jsonObjSon.put("jzdm", JZDM);
-					jsonObjSon.put("system_type", SYSTEM_TYPE);
-
-					jsonObjSon.put("fkyydm", FKYYDM);
-					jsonObjSon.put("purpose", PURPOSE);
-					jsonObjSon.put("amt", AMT);
-					jsonObjSon.put("gysdm", GYSDM);
-					jsonObjSon.put("payee_name", PAYEE_NAME);
-					jsonObjSon.put("payee_bank", PAYEE_BANK);
-					jsonObjSon.put("payee_acc_no", PAYEE_ACC_NO);
-					jsonObjSon.put("payee_code", PAYEE_CODE);
-					jsonObjSon.put("isforindividual", ISFORINDIVIDUAL);
-					jsonObjSon.put("urgency_flag", URGENCY_FLAG);
-					jsonObjSon.put("sfpz", sfpz);
-					jsonArray.put(jsonObjSon);
-				}
-				head.put("bean", jsonArray);
-				ECPayXmlUtil chan = new ECPayXmlUtil();
-				String json = chan.javaToXml("", "", requestid, head.toString());
-				log.writeLog("开始————————json" + json);
-				HnPayWebService pay = new HnPayWebService();
-				String sign = "";
-				String mess = "";
+			if(!"S".equals(sapReturnStatus)){
+	            return SUCCESS;
+	        }
+			if("S".equals(status)){
+	            return SUCCESS;
+	        }
+			if("82".equals(fycdfb1) || "83".equals(fycdfb1) || "84".equals(fycdfb1)) {
 				try {
-					Response result = pay.getResultMethod(json);
-					sign = result.getSIGN();
-					mess = result.getMessage();
+					JSONObject head = new JSONObject();
+					JSONArray jsonArray = new JSONArray();
+	
+					// 查询明细表
+	
+					sql = "select * from " + tableNamedt + " where mainid=" + mainID;
+					rs.execute(sql);
+					log.writeLog("开始————————" + sql);
+					while (rs.next()) {
+						String PAYER_ACC_NO = Util.null2String(rs.getString("fkyhzh2"));// 付款银行账号
+						String ITEM_CODE = Util.null2String(rs.getString("kmbm"));// 资金计划科目编码
+						String AMT = Util.null2String(rs.getString("payamt"));// 收款金额
+						String GYSDM = Util.null2String(rs.getString("hrmcode"));// 单位编号
+						String PAYEE_NAME = Util.null2String(rs.getString("hrmname"));// 员工户名
+						String PAYEE_BANK = Util.null2String(rs.getString("hrmbankname"));// 开户行
+						String PAYEE_ACC_NO = Util.null2String(rs.getString("hrmbankaccount"));// 银行账号
+						String PAYEE_CODE = Util.null2String(rs.getString("hrmbankcode"));// 联行号
+						String FKYYDM = Util.null2String(rs.getString("cashcode2"));// 现金流量代码
+						String PURPOSE = Util.null2String(rs.getString("usage"));// 银行付款用途
+						String VOUCHER_TYPE = Util.null2String(rs.getString("paytype"));// 付款方式
+						VOUCHER_TYPE = tran.getPaytype(VOUCHER_TYPE);
+						String ISFORINDIVIDUAL = Util.null2String(rs.getString("gsbz"));// 对公对私标志
+						String URGENCY_FLAG = Util.null2String(rs.getString("jjbz"));// 加急标志
+	
+						JSONObject jsonObjSon = new JSONObject();
+	
+						jsonObjSon.put("serial_no_erp", SERIAL_NO_ERP);
+						jsonObjSon.put("req_date", REQ_DATE);
+						jsonObjSon.put("corp_code", CORP_CODE);
+						jsonObjSon.put("payer_acc_no", PAYER_ACC_NO);
+						jsonObjSon.put("cur", CUR);
+						jsonObjSon.put("item_code", ITEM_CODE);
+						jsonObjSon.put("zzbs", ZZBS);
+						jsonObjSon.put("rmk", RMK);
+						jsonObjSon.put("abs", ABS);
+						jsonObjSon.put("voucher_type", VOUCHER_TYPE);
+						jsonObjSon.put("wish_pay_day", WISH_PAY_DAY);
+						jsonObjSon.put("zzkm", ZZKM);
+						jsonObjSon.put("jzdm", JZDM);
+						jsonObjSon.put("system_type", SYSTEM_TYPE);
+	
+						jsonObjSon.put("fkyydm", FKYYDM);
+						jsonObjSon.put("purpose", PURPOSE);
+						jsonObjSon.put("amt", AMT);
+						jsonObjSon.put("gysdm", GYSDM);
+						jsonObjSon.put("payee_name", PAYEE_NAME);
+						jsonObjSon.put("payee_bank", PAYEE_BANK);
+						jsonObjSon.put("payee_acc_no", PAYEE_ACC_NO);
+						jsonObjSon.put("payee_code", PAYEE_CODE);
+						jsonObjSon.put("isforindividual", ISFORINDIVIDUAL);
+						jsonObjSon.put("urgency_flag", URGENCY_FLAG);
+						jsonObjSon.put("sfpz", sfpz);
+						jsonArray.put(jsonObjSon);
+					}
+					head.put("bean", jsonArray);
+					ECPayXmlUtil chan = new ECPayXmlUtil();
+					String json = chan.javaToXml("", "", requestid, head.toString());
+					log.writeLog("开始————————json" + json);
+					HnPayWebService pay = new HnPayWebService();
+					String sign = "";
+					String mess = "";
+					try {
+						Response result = pay.getResultMethod(json);
+						sign = result.getSIGN();
+						mess = result.getMessage();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
+					String para = "message";
+					Map<String, Object> result = saxXmlUtil.getXmlMap(mess);
+					Object message = result.get(para);//提示信息
+					if(message.toString().length() >=50 ){
+						message = message.toString().substring(0,50);
+					}
+					log.writeLog("状态和消息------"+sign +"," +message);
+					String sql_update = "update " + tableName + " set status='" + sign + "',message='" + message + "' where requestid=" + requestid;
+					rs.execute(sql_update);
+					if ("F".equals(sign)) {
+						// 调用异常 返回错误信息
+						info.getRequestManager().setMessageid(System.currentTimeMillis() + "");
+						info.getRequestManager().setMessagecontent(message.toString());
+						return SUCCESS;
+					}
+	
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.writeLog(e.getMessage());
 				}
-				SaxXmlUtil saxXmlUtil = new SaxXmlUtil();
-				String para = "message";
-				Map<String, Object> result = saxXmlUtil.getXmlMap(mess);
-				Object message = result.get(para);//提示信息
-				if(message.toString().length() >=50 ){
-					message = message.toString().substring(0,50);
-				}
-				log.writeLog("状态和消息------"+sign +"," +message);
-				String sql_update = "update " + tableName + " set status='" + sign + "',message='" + message + "' where requestid=" + requestid;
-				rs.execute(sql_update);
-				if ("F".equals(sign)) {
-					// 调用异常 返回错误信息
-					info.getRequestManager().setMessageid(System.currentTimeMillis() + "");
-					info.getRequestManager().setMessagecontent(message.toString());
-					return SUCCESS;
-				}
-
-			} catch (Exception e) {
-				log.writeLog(e.getMessage());
 			}
 
 		} else {

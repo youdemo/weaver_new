@@ -42,7 +42,7 @@ public class NoContractPrepayAction implements Action {
 		String ABS = "";// 预付款申请说明
 		String WISH_PAY_DAY = "";// 申请日期
 		String ZZKM = "";// 传递空值
-		String JZDM = "29";// 固定值29
+		String JZDM = "21";// 固定值21
 		String SYSTEM_TYPE = "0";// 固定值0
 		String sfpz = "0";// 固定值0
 
@@ -60,9 +60,6 @@ public class NoContractPrepayAction implements Action {
 				CUR = Util.null2String(rs.getString("bb"));
 				RMK = Util.null2String(rs.getString("flowno"));
 				ABS = Util.null2String(rs.getString("remark"));
-				if (ABS.length() >= 50) {
-					ABS = ABS.substring(0, 50);
-				}
 				WISH_PAY_DAY = Util.null2String(rs.getString("reqdate"));
 			}
 			try {
@@ -86,6 +83,11 @@ public class NoContractPrepayAction implements Action {
 					String FKYYDM = Util.null2String(rs.getString("cashcode2"));// 现金流量代码
 					String PURPOSE = Util.null2String(rs.getString("usage"));// 银行付款用途
 					String VOUCHER_TYPE = Util.null2String(rs.getString("paytype"));// /付款方式
+					String cus_code = Util.null2String(rs.getString("unitcode"));// 供应商编码
+					ABS =  cus_code + "/*@" + ABS;
+					if (ABS.length() >= 50) {
+						ABS = ABS.substring(0, 50);
+					}
 					TransformUtil tran = new TransformUtil();
 					VOUCHER_TYPE = tran.getPaytype(VOUCHER_TYPE);
 

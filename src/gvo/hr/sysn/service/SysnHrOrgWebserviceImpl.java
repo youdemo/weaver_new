@@ -444,8 +444,7 @@ public class SysnHrOrgWebserviceImpl {
 		String loginid = "";
 		String seclevel = "";
 		String yglb = "";//员工类型 0直接 1间接
-		Map<String, String> jobMap = new HashMap<String, String>();
-		Map<String, String> jobCusMap = new HashMap<String, String>();
+		
 		String sql_dt = "";
 		String sql = "select loginid,seclevel from hrmresource where id="+ryid;
 		rs.executeSql(sql);
@@ -461,6 +460,8 @@ public class SysnHrOrgWebserviceImpl {
 		sql = "select * from uf_personneljob where emplid='" + emplid + "' and pc='"+pc+"'";
 		rs.executeSql(sql);
 		while (rs.next()) {
+			Map<String, String> jobMap = new HashMap<String, String>();
+			Map<String, String> jobCusMap = new HashMap<String, String>();
 			JSONObject resutlJo = new JSONObject();
 			insertFlag = "0";
 			jobid = "";
@@ -529,10 +530,12 @@ public class SysnHrOrgWebserviceImpl {
 			if("".equals(ryids)) {
 				seclevel = "";
 			}
-			sql_dt = "select seclevel from hrmresource where id="+ryids;
-			rs_dt.executeSql(sql_dt);
-			if(rs_dt.next()) {
-				seclevel = Util.null2String(rs_dt.getString("seclevel"));
+			if(!"".equals(ryids)) {
+				sql_dt = "select seclevel from hrmresource where id="+ryids;
+				rs_dt.executeSql(sql_dt);
+				if(rs_dt.next()) {
+					seclevel = Util.null2String(rs_dt.getString("seclevel"));
+				}
 			}
 			if ("A".equals(actionFlag) && "".equals(seclevel)) {
 				if ("10".equals(idenCategory)) {
@@ -567,7 +570,7 @@ public class SysnHrOrgWebserviceImpl {
 						jkloginid = Util.null2String(rs_dt.getString("loginid"));
 					}
 					if("".equals(jkloginid)) {
-						sql_dt = "select id+1 as id from hrmresource where workcode like '" + emplid + "%' and id <"+jkid;
+						sql_dt = "select max(id)+1 as id from hrmresource where workcode like '" + emplid + "%' and id <"+jkid;
 						rs_dt.executeSql(sql_dt);
 						if(rs_dt.next()) {
 							jkloginid = loginid+Util.null2String(rs_dt.getString("id"));

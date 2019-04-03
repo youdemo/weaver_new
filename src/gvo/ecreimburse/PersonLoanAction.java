@@ -70,8 +70,8 @@ public class PersonLoanAction implements Action {
 				REQ_DATE = Util.null2String(rs.getString("reqdate"));
 				CORP_CODE = Util.null2String(rs.getString("corpcode"));
 				CUR = Util.null2String(rs.getString("balancetype"));
-				ZZBS = Util.null2String(rs.getString("loantype"));
-				ZZBS = tran.getLoantype(ZZBS);
+				//ZZBS = Util.null2String(rs.getString("loantype"));--ZZBS传空 20180306
+				//ZZBS = tran.getLoantype(ZZBS);
 				RMK = Util.null2String(rs.getString("flowno"));
 				ABS = Util.null2String(rs.getString("remark"));
 				if (ABS.length() >= 50) {

@@ -115,7 +115,7 @@ public class CreateDCPRequestServiceImpl {
 		header.put("sqrq", now);
 		header.put("lcsxrq", jObject.getString("Date"));
 		AutoRequestService ars = new AutoRequestService();
-		result = ars.createRequest(workflowid, json.toString(), creater, "0");
+		result = ars.createRequest(workflowid, json.toString(), creater, "1");
 		String docids = "";
 		String flag = "";
 		JSONObject resultobj = new JSONObject(result);

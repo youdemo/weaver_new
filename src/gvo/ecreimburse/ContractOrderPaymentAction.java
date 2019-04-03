@@ -60,6 +60,7 @@ public class ContractOrderPaymentAction implements Action {
 		String SYSTEM_TYPE = "0";// 固定值0
 		String PAYTYPE = "";// 结算方式
 		String sfpz = "";// 是否生成凭证
+		String cgddh = "";//采购订单编号
 		sql = " Select tablename From Workflow_bill Where id in ( Select formid From workflow_base Where id= "
 				+ workflowID + ")";
 
@@ -82,9 +83,11 @@ public class ContractOrderPaymentAction implements Action {
 				PAYER_ACC_NO = Util.null2String(rs.getString("fkyhzh2"));
 				CUR = Util.null2String(rs.getString("htjebz"));
 				ITEM_CODE = Util.null2String(rs.getString("kmbm"));
-
+				GYSDM = Util.null2String(rs.getString("gysbm"));
 				RMK = Util.null2String(rs.getString("htbh"));
+				cgddh = Util.null2String(rs.getString("cgddh"));
 				ABS = Util.null2String(rs.getString("fksy"));
+				ABS = GYSDM + "/" + RMK.replace("-", "") + "*" + cgddh + "@" + ABS;
 				if (ABS.length() >= 50) {
 					ABS = ABS.substring(0, 50);
 				}
@@ -100,8 +103,10 @@ public class ContractOrderPaymentAction implements Action {
 				VOUCHER_TYPE = tran.getPaytype(VOUCHER_TYPE);
 
 				WISH_PAY_DAY = Util.null2String(rs.getString("sqrq"));
-				AMT = Util.null2String(rs.getString("htjfbcje"));
-				GYSDM = Util.null2String(rs.getString("gysbm"));
+				AMT = Util.null2String(rs.getString("bczfyb"));
+				if("".equals(AMT)){
+					AMT = "0";
+				}
 				PAYEE_NAME = Util.null2String(rs.getString("hm"));
 				PAYEE_BANK = Util.null2String(rs.getString("khh"));
 				PAYEE_ACC_NO = Util.null2String(rs.getString("skzh"));

@@ -1,5 +1,6 @@
 package gvo.webservice;
 
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -73,6 +74,8 @@ public abstract class Test {
 //	}
 //销假流程	
 	public static void main(String[] args) throws Exception {
+		String vvv=URLDecoder.decode("%E4%B8%8B%E8%BD%BD.jpeg");
+		System.out.println(vvv);
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 		String now = sf.format(new Date());
 		String aa="2017-06-07";

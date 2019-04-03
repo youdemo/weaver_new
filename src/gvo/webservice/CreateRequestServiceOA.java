@@ -1,5 +1,7 @@
 package gvo.webservice;
 
+import org.codehaus.xfire.MessageContext;
+import org.codehaus.xfire.service.invoker.AbstractInvoker;
 import org.json.JSONException;
 import org.json.JSONObject;
 import weaver.general.BaseBean;
@@ -9,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class CreateRequestServiceOA extends BaseBean {
-    public OutHeadInfo CreateMaterialApproval(String head,String workcode, String dataInfo) {
+    public OutHeadInfo CreateMaterialApproval(String head, String workcode, String dataInfo) {
         BaseBean log = new BaseBean();
         log.writeLog("CreateMaterialApproval workcode:" + workcode + " dataInfo:" + dataInfo);
         if ("".equals(workcode) || "".equals(dataInfo)) {
@@ -34,7 +36,7 @@ public class CreateRequestServiceOA extends BaseBean {
 //        return result;
     }
 
-    public OutHeadInfo CreateSupplierUpdate(String head,String workcode, String dataInfo) {
+    public OutHeadInfo CreateSupplierUpdate(String head, String workcode, String dataInfo) {
         BaseBean log = new BaseBean();
         log.writeLog("CreateSupplierUpdate workcode:" + workcode + " dataInfo:" + dataInfo);
         if ("".equals(workcode) || "".equals(dataInfo)) {
@@ -76,29 +78,44 @@ public class CreateRequestServiceOA extends BaseBean {
         log.writeLog("CreateHR015Service result:" + result);
         return result;
     }
-    public String CreateEmployApproval(String dataInfo) throws JSONException {
+
+    public String CreateEmployApproval(String dataInfo) {
         BaseBean log = new BaseBean();
-        log.writeLog("CreateMaterialApproval dataInfo:" + dataInfo);
+        log.writeLog("CreateEmployApproval dataInfo:" + dataInfo);
         if ("".equals(dataInfo)) {
             Map<String, String> retMap = new HashMap<String, String>();
             retMap.put("MSG_TYPE", "E");
-            retMap.put("MSG_CONTENT", "json数据无法解析");
+            retMap.put("MSG_CONTENT", "参数不能为空");
             retMap.put("OA_ID", "0");
             log.writeLog("CreateEmployApproval result:" + getJsonStr(retMap));
             return getJsonStr(retMap);
         }
+        MessageContext ctx = AbstractInvoker.getContext();
         CreateRequestServiceOAImpl crso = new CreateRequestServiceOAImpl();
-        String result = crso.doserviceEmploy(dataInfo);
+        String result = null;
+        try {
+            result = crso.doserviceEmploy(dataInfo, ctx);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log.writeLog(e.getMessage());
+            Map<String, String> retMap = new HashMap<String, String>();
+            retMap.put("MSG_TYPE", "E");
+            retMap.put("MSG_CONTENT", "json解析异常");
+            retMap.put("OA_ID", "0");
+            log.writeLog("CreateEmployApproval result:" + getJsonStr(retMap));
+            return getJsonStr(retMap);
+        }
         log.writeLog("CreateEmployApproval result:" + result);
         return result;
     }
+
     public String CreateDocPermiss(String dataInfo) throws JSONException {
         BaseBean log = new BaseBean();
         log.writeLog("CreateDocPermiss dataInfo:" + dataInfo);
         if ("".equals(dataInfo)) {
             Map<String, String> retMap = new HashMap<String, String>();
             retMap.put("MSG_TYPE", "E");
-            retMap.put("MSG_CONTENT", "json数据无法解析");
+            retMap.put("MSG_CONTENT", "参数不能为空");
             retMap.put("OA_ID", "0");
             log.writeLog("CreateDocPermiss result:" + getJsonStr(retMap));
             return getJsonStr(retMap);
@@ -108,6 +125,7 @@ public class CreateRequestServiceOA extends BaseBean {
         log.writeLog("CreateDocPermiss result:" + result);
         return result;
     }
+
     private String getJsonStr(Map<String, String> map) {
         JSONObject json = new JSONObject();
         Iterator<String> it = map.keySet().iterator();

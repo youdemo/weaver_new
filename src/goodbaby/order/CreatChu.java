@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import goodbaby.pz.GetGNSTableName;
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
@@ -20,8 +21,13 @@ import weaver.workflow.webservices.WorkflowServiceImpl;
 public class CreatChu {
 	public String creatChu(String rids, String sls) {
 		BaseBean log = new BaseBean();
+		GetGNSTableName gg = new GetGNSTableName();
+		String tablename_cgdd = gg.getTableName("CGDD");
+		String tablename_ht = gg.getTableName("FKJHT");//非框架合同
 		String workflowid = "213";//c 213 z 291
 		RecordSet rs = new RecordSet();
+		RecordSet rs_dt = new RecordSet();
+		String sql_dt = "";
 		String rid[] = rids.split(",");
 		String sl[] = sls.split(",");
 		//log.writeLog("rids---" + rids + "---sls---" + sls);
@@ -30,6 +36,10 @@ public class CreatChu {
 		String gys = "";
 		String results = "";
 		String xtkh = "";
+		String taxRate = "";
+		String dj = "";
+		String contactReq = "";
+		String contactDtId = "";
 		for (int i = 0; i < rid.length; i++) {
 			JSONObject json = new JSONObject();
 			JSONObject header = new JSONObject();
@@ -42,14 +52,18 @@ public class CreatChu {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			String sql = "select a.SHDW,a.CBZX,a.SHCK,a.SHR,a.xtkh, a.CGSL,a.DDBH,a.WLMC,a.DJ,a.GYSMC,a.WLBM,a.zjlbm  from "
-					+ " formtable_main_240 a where requestid ='"
+			String sql = "select a.SHDW,a.CBZX,a.SHCK,a.SHR,a.xtkh, a.CGSL,a.DDBH,a.WLMC,a.DJ,a.GYSMC,a.WLBM,a.zjlbm,a.cgdl,a.fykm,a.taxRate,a.contactReq,a.contactDtId  from "
+					+ " "+tablename_cgdd+" a where requestid ='"
 					+ rid[i]
 					+ "' ";//z 234  c 240
 			rs.executeSql(sql);
 			if (rs.next()) {
 				gys = Util.null2String(rs.getString("GYSMC"));
 				xtkh = Util.null2String(rs.getString("xtkh"));
+				taxRate = Util.null2String(rs.getString("taxRate"));
+				dj = Util.null2String(rs.getString("DJ"));
+				contactReq = Util.null2String(rs.getString("contactReq"));
+				contactDtId = Util.null2String(rs.getString("contactDtId"));
 				JSONObject node = new JSONObject();
 				try {
 					header.put("SHDW", Util.null2String(rs.getString("SHDW")));
@@ -58,13 +72,47 @@ public class CreatChu {
 					header.put("SHR", Util.null2String(rs.getString("SHR")));
 					header.put("xtgys", Util.null2String(rs.getString("xtkh")));
 					header.put("zjlbm", Util.null2String(rs.getString("zjlbm")));//总经理部门
+					header.put("cgdl", Util.null2String(rs.getString("cgdl")));//采购大类
+					header.put("fykm", Util.null2String(rs.getString("fykm")));//费用科目
 					node.put("CGSL_1", Util.null2String(rs.getString("CGSL")));
 					node.put("WLMC_1", Util.null2String(rs.getString("WLMC")));
 					node.put("DJ_1", Util.null2String(rs.getString("DJ")));
 					node.put("WLBH_1", Util.null2String(rs.getString("WLBM")));
 					node.put("gys", Util.null2String(rs.getString("GYSMC")));
+					node.put("sl", taxRate);
 					node.put("cgsqd", rid[i]);
 					node.put("SJSHSL_1", sl[i]);
+					String rate = "0";
+					if(!"".equals(taxRate)) {
+						sql_dt ="select rate from uf_tax_rate where id="+taxRate;
+						rs_dt.executeSql(sql_dt);
+						if(rs_dt.next()) {
+							rate = Util.null2String(rs_dt.getString("rate"));
+						}
+					}
+					if("".equals(rate)) {
+						rate = "0";
+					}
+					node.put("slrate",rate);
+					sql_dt = "select cast("+dj+"*"+sl[i]+" as numeric(18,2))  as je,cast(cast("+dj+"*"+sl[i]+" as numeric(18,2))/(1+"+rate+") as numeric(18,2)) as wsje";
+					rs_dt.executeSql(sql_dt);
+					if(rs_dt.next()) {
+						node.put("JE_1", Util.null2String(rs_dt.getString("je")));
+						node.put("wsje",Util.null2String(rs_dt.getString("wsje")));
+					}
+					if(!"".equals(contactReq) && !"".equals(contactDtId)) {
+						sql_dt = "select * from (select row_number() over(order by b.id asc) as num,htbh,fkbfb,fkje,sfrk,b.id from "+tablename_ht+" a,"+tablename_ht+"_dt1 b where a.id=b.mainid and a.requestid='"+contactReq+"') t where t.id="+contactDtId; 
+						rs_dt.executeSql(sql_dt);
+						if(rs_dt.next()) {
+							node.put("xght",contactReq);
+							node.put("fkxh",Util.null2String(rs_dt.getString("num")));
+							node.put("fktj",Util.null2String(rs_dt.getString("fkbfb")));
+							node.put("fkje",Util.null2String(rs_dt.getString("fkje")));
+						}
+					}
+					
+					
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

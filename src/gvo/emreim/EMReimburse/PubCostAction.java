@@ -35,6 +35,7 @@ public class PubCostAction extends BaseBean implements Action {
         String REQNAME = "";//报销人姓名
         String VOUCHERTYPE = "ZE";//凭证类型
         String VOUCHERSPUN = "X";//是否抛转
+        String sapReturnStatus = "";
 
         sql = " select tablename from workflow_bill where id in (select formid from workflow_base where id = " + workflowID + ")";
         rs.execute(sql);
@@ -52,14 +53,18 @@ public class PubCostAction extends BaseBean implements Action {
 //            log.writeLog("tableNamedt1=" + tableNamedt);
             rs.execute(sql);
             if(rs.next()) {
+            	REQCODE = getWorkcode(res,Util.null2String(rs.getString("bxr")));
                 mainID = Util.null2String(rs.getString("id"));
                 CORPCODE = Util.null2String(rs.getString("corpcode"));
-                REQCODE = Util.null2String(rs.getString("reqcode"));
                 CURRTYPE_DES = Util.null2String(rs.getString("currtype_des"));
                 FYBXSM = Util.null2String(rs.getString("fybxsm"));
                 FLOWNO = Util.null2String(rs.getString("flowno"));
                 REQNAME = Util.null2String(rs.getString("reqname"));
                 log.writeLog("查看REQNAME————————" + REQNAME);
+                sapReturnStatus = Util.null2String(rs.getString("sapReturnStatus"));
+            }
+            if("S".equals(sapReturnStatus)){
+            	return SUCCESS;
             }
             //查询明细表1
             sql = "select * from " + tableNamedt + " where mainid= " + mainID;
@@ -134,4 +139,14 @@ public class PubCostAction extends BaseBean implements Action {
         }
         return SUCCESS;
     }
+    //查询数据库，返回报销人编号
+  	private String getWorkcode(RecordSet res,String hrmid) {
+  		String code = "";
+  		String sql = "select workcode from hrmresource where id=" + hrmid;
+  		res.execute(sql);
+  		if(res.next()){
+  			code = Util.null2String(res.getString("workcode"));
+  		}
+  		return code;
+  	}
 }
