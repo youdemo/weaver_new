@@ -157,7 +157,7 @@ public class CertificateWorkflowAction implements Action {
         if (!"".equals(tableName)) {
             sql = "select " + f_sqr + "," + f_sqbm + "," + f_sy + "," + f_tzjl + "," + f_bxje + "," + f_rzrq + "," +
                     "" + f_oabh + "," + f_sfxydr + "," + f_bxfs + "," + f_ssfb + "," + f_sfxyxztzjl + "," + f_sqrq + "," +
-                    " id,lengthb(" + f_sy + ") as syleng,payee,PaymentType,skdwhm from " + tableName + " " +
+                    " id,lengthb(" + f_sy + ") as syleng,payee,PaymentType,skdwhm,field_1954858588 as newtzjl from " + tableName + " " +
                     " where requestid = '" + info.getRequestid() + "'";
             writeLog("主表SQL：" + sql);
             rs.executeSql(sql);
@@ -166,7 +166,7 @@ public class CertificateWorkflowAction implements Action {
                 m_sqbm = Util.null2String(rs.getString(f_sqbm));    //申请部门
 //				 need_pzh = Util.null2String(rs.getString(f_pzh));	//凭证号
                 m_sy = Util.null2String(rs.getString(f_sy));    //事由
-                m_tzjl = Util.null2String(rs.getString(f_tzjl));    //拓展经理
+                m_tzjl = Util.null2String(rs.getString("newtzjl"));    //拓展经理
                 need_bxje = Util.null2String(rs.getString(f_bxje));    //报销金额
 //				 need_m_fjs  = Util.null2String(rs.getString(f_fjs));	//主表附件数
                 need_rzrq = Util.null2String(rs.getString(f_rzrq));    //入账日期
@@ -344,7 +344,7 @@ public class CertificateWorkflowAction implements Action {
                 if ("0".equals(m_sfxyxztzjl)) {
                     //根据拓展经理字段判断核算科目属于哪种情况
                     if (!"".equals(m_tzjl) && !"0".equals(m_tzjl)) {
-                        sql_str = "select * from hrmManager where resourceid = '" + m_tzjl + "' and isshow='0'";
+                        sql_str = "select * from uf_hrmmanager where resourceid = '" + m_tzjl + "' and isshow='0'";
                         writeLog("拓展经理ID语句:---------------" + sql_str);
                         rs.executeSql(sql_str); 
                         if (rs.next()) {

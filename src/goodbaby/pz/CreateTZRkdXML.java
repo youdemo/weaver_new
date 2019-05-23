@@ -101,7 +101,7 @@ public class CreateTZRkdXML implements Action{
 			yjcbzx = Util.null2String(rs.getString("yjcbzx"));
 			cgdl = Util.null2String(rs.getString("cgdl"));
 		}
-		if(!"3".equals(cgdl)) {
+		if(!"1".equals(cgdl)) {
 			return "";
 		}
 		String gszt = xu.getCompanyCode(yjcbzx);

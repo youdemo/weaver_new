@@ -24,7 +24,7 @@ public class CreatChu {
 		GetGNSTableName gg = new GetGNSTableName();
 		String tablename_cgdd = gg.getTableName("CGDD");
 		String tablename_ht = gg.getTableName("FKJHT");//非框架合同
-		String workflowid = "213";//c 213 z 291
+		String workflowid = "291";//c 213 z 291
 		RecordSet rs = new RecordSet();
 		RecordSet rs_dt = new RecordSet();
 		String sql_dt = "";

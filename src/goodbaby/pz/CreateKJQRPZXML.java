@@ -168,14 +168,14 @@ public class CreateKJQRPZXML {
 			}else {
 				fyrzkm = "220205020106";
 			}
-		}else if("1".equals(cgdl)) {//服务
+		}else if("3".equals(cgdl)) {//服务
 			xjlllx = "1";
 			if("人民币".equals(bz)) {
 				fyrzkm = "220205010108";
 			}else {
 				fyrzkm = "220205020107";
 			}
-		}else if("3".equals(cgdl)) {//投资
+		}else if("1".equals(cgdl)) {//投资
 			xjlllx = "0";
 			if("人民币".equals(bz)) {
 				fyrzkm = "220205010102";

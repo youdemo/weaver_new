@@ -11,7 +11,7 @@ import weaver.general.Util;
 import weaver.hrm.resource.AllManagers;
 import weaver.hrm.resource.ResourceComInfo;
 
-public class HrmOrgAction {
+public class HrmOrgAction20190416 {
 
 	/*
 	 *   分部操作
@@ -944,7 +944,6 @@ public class HrmOrgAction {
 			mapStr.put("belongto","-1");
 			mapStr.put("needdynapass","0");
 			mapStr.put("passwordstate","1");
-			mapStr.put("seclevel",comMap.get("SecLevel"));
 			
 			
 			boolean isRun = tdu.insert(mapStr,"hrmresource");
@@ -980,20 +979,6 @@ public class HrmOrgAction {
 				e.printStackTrace();
 				log.writeLog(e.getMessage());
 			}
-			log.writeLog("testHrmUserSetting");
-			Map<String,String> mapset = new HashMap<String,String>();
-			sql = " select * from HrmUserSetting where resourceId="+id;
-			log.writeLog("sql:"+sql);
-			rs.execute(sql);
-	        if(rs.getCounts()==0) {
-	        	mapset.put("resourceId", id);
-	        	mapset.put("rtxOnload", "0");
-	        	mapset.put("isCoworkHead", "1");
-	        	mapset.put("belongtoshow", "1");
-	        	tdu.insert(mapset,"HrmUserSetting");
-	        }else {
-	        	rs.execute(" update HrmUserSetting set belongtoshow=1 where resourceId="+id);
-	        }			
 		}else {
 			Map<String,String> mapStr = new HashMap<String,String>();
 			mapStr.put("workcode", comMap.get("workcode"));//员工工号
@@ -1126,9 +1111,7 @@ public class HrmOrgAction {
 		mapStr.put("jobtitle", jobMap.get("jobtitle"));
 		mapStr.put("departmentid", deptID);
 		mapStr.put("subcompanyid1", comID);
-		if(!"".equals(jobMap.get("managerid"))) {
-			mapStr.put("managerid", jobMap.get("managerid"));
-		}
+		mapStr.put("managerid", jobMap.get("managerid"));
 		mapStr.put("loginid", jobMap.get("loginid"));
 		String seclevel = Util.null2String(jobMap.get("seclevel"));
 		if(!"".equals(seclevel)) {
@@ -1226,9 +1209,8 @@ public class HrmOrgAction {
 			mapStr.put("jobtitle", jobMap.get("jobtitle"));
 			mapStr.put("departmentid", deptID);
 			mapStr.put("subcompanyid1", comID);
-			if(!"".equals(jobMap.get("managerid"))) {
-				mapStr.put("managerid", jobMap.get("managerid"));
-			}
+			
+			mapStr.put("managerid", jobMap.get("managerid"));
 			mapStr.put("nationality",Util.null2String(rs.getString("nationality")));
 			mapStr.put("systemlanguage",Util.null2String(rs.getString("systemlanguage")));
 			//mapStr.put("password",hrb.getPassword());

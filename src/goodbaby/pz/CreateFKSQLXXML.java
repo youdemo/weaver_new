@@ -166,9 +166,9 @@ public class CreateFKSQLXXML implements Action{
 		String fyrzkm = "";
 		if("2".equals(cgdl)) {//零星
 			fyrzkm = "220205010206";
-		}else if("1".equals(cgdl)) {
+		}else if("3".equals(cgdl)) {
 			fyrzkm = "220205010207";//服务
-		}else if("3".equals(cgdl)) {//
+		}else if("1".equals(cgdl)) {//
 			fyrzkm = "220205010203";//投资
 		}
 		xml.append("<entry>").append("\n");
@@ -343,13 +343,13 @@ public class CreateFKSQLXXML implements Action{
 				}else {
 					dfrzkm = "220205020106";
 				}
-			}else if("1".equals(cgdl)) {//服务
+			}else if("3".equals(cgdl)) {//服务
 				if("人民币".equals(bz)) {
 					dfrzkm = "220205010108";
 				}else {
 					dfrzkm = "220205020107";
 				}
-			}else if("3".equals(cgdl)) {//投资
+			}else if("1".equals(cgdl)) {//投资
 				if("人民币".equals(bz)) {
 					dfrzkm = "220205010102";
 				}else {

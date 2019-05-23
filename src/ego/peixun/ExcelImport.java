@@ -1,5 +1,7 @@
 package ego.peixun;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,11 +13,17 @@ import weaver.general.BaseBean;
 import weaver.general.Util;
 
 public class ExcelImport {
-	public String readAndExceSheet(Sheet sheet) {
+	public String readAndExceSheet(Sheet sheet,int userid) {
 		BaseBean log = new BaseBean();
 		log.writeLog("进入Excel");
 		RecordSet rs = new RecordSet();
 		String sql = "";
+		String creater = userid+"";
+		if("".equals(creater)) {
+			creater = "1";
+		}
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		String now = sf.format(new Date());
 		int rows = sheet.getRows();
 		String modeid = getModeId("uf_BTABLE");
 		InsertUtilNew iu = new InsertUtilNew();
@@ -83,8 +91,9 @@ public class ExcelImport {
 				mapStr.put("ZT", ZT);
 				mapStr.put("pxry", pxry);
 				mapStr.put("bm", bm);
-				mapStr.put("modedatacreater", "1");
+				mapStr.put("modedatacreater", creater);
 				mapStr.put("modedatacreatertype", "0");
+				mapStr.put("modedatacreatedate", now);
 				mapStr.put("formmodeid", modeid);
 
 				iu.insert(mapStr, "uf_BTABLE");

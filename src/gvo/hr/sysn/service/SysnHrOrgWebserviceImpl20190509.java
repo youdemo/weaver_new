@@ -7,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import feilida.updateRqid;
 import gvo.hr.sysn.tmc.org.HrmDepartmentBean;
 import gvo.hr.sysn.tmc.org.HrmJobTitleBean;
 import gvo.hr.sysn.tmc.org.HrmOrgAction;
@@ -24,7 +23,7 @@ import weaver.hrm.job.JobGroupsComInfo;
 import weaver.hrm.job.JobTitlesComInfo;
 import weaver.hrm.job.JobTitlesTempletComInfo;
 
-public class SysnHrOrgWebserviceImpl {
+public class SysnHrOrgWebserviceImpl20190509 {
 
 	/**
 	 * 同步公司组织信息
@@ -107,8 +106,7 @@ public class SysnHrOrgWebserviceImpl {
 			}
 
 			HrmDepartmentBean hdb = new HrmDepartmentBean();
-			String deptcode= jo.getString("deptid");
-			hdb.setDepartmentcode(deptcode);
+			hdb.setDepartmentcode(jo.getString("deptid"));
 			hdb.setDepartmentname(jo.getString("descr"));
 			hdb.setDepartmentark(jo.getString("descr"));
 			String subcompanyid = issubcompany(jo.getString("parDeptId"));
@@ -126,7 +124,7 @@ public class SysnHrOrgWebserviceImpl {
 				hdb.setComIdOrCode(0);
 				hdb.setSubcompanyid1(subcompanyid);
 			}
-			String isupdate = checkIsUpdatePerSub(deptcode,subcompanyid);
+
 			// 排序字段
 			hdb.setOrderBy(0);
 			// 状态 0正常 1封装
@@ -140,13 +138,10 @@ public class SysnHrOrgWebserviceImpl {
 			ReturnInfo result = hoa.operDept(hdb);
 			JSONObject resutlJo = new JSONObject();
 			if (!result.isTure()) {
-				resutlJo = getResultJo(deptcode, "", jo.getString("lastupdttm"), "E", result.getRemark());
+				resutlJo = getResultJo(jo.getString("deptid"), "", jo.getString("lastupdttm"), "E", result.getRemark());
 				sign = "E";
 			} else {
-				resutlJo = getResultJo(deptcode, "", jo.getString("lastupdttm"), "S", "OK");
-				if("1".equals(isupdate)) {
-					updatePersonCompany(deptcode,subcompanyid);
-				}
+				resutlJo = getResultJo(jo.getString("deptid"), "", jo.getString("lastupdttm"), "S", "OK");
 			}
 			if ("2".equals(num)) {
 				if (resutlJo != null) {
@@ -178,25 +173,17 @@ public class SysnHrOrgWebserviceImpl {
 		HrmOrgAction hoa = new HrmOrgAction();
 		String jobcode = "";
 		String descr = "";
-		//String descrShort = "";
+		String descrShort = "";
 		String status = "";
 		String sign = "";
-		String channel = "";
-		String seq = "";
-		String gradeId = "";
-		String managerType = "";
 		String sql = "";
 		int count = 0;
 		for (int i = 0; i < ja.length(); i++) {
 			JSONObject jo = ja.getJSONObject(i);
 			jobcode = Util.null2String(jo.getString("jobcode"));
 			descr = Util.null2String(jo.getString("descr"));
-			//descrShort = Util.null2String(jo.getString("descrShort"));
+			descrShort = Util.null2String(jo.getString("descrShort"));
 			status = Util.null2String(jo.getString("status"));
-			channel = Util.null2String(jo.getString("channel"));
-			seq = Util.null2String(jo.getString("seq"));
-			gradeId = Util.null2String(jo.getString("gradeId"));
-			managerType = Util.null2String(jo.getString("managerType"));
 			if ("".equals(jobcode)) {
 				continue;
 			}
@@ -207,14 +194,16 @@ public class SysnHrOrgWebserviceImpl {
 				count = rs.getInt("count");
 			}
 			if (count > 0) {
-				sql = "update uf_hr_activitycode set zwms = '" + descr + "' ,sxzt = '" + status + "',channel = '" + channel + "',seq = '" + seq + "',gradeId = '" + gradeId + "',managerType = '" + managerType + "' where zwid = '" + jobcode + "'";
+				sql = "update uf_hr_activitycode set zwms = '" + descr + "' , zwjc = '" + descrShort
+						+ "',sxzt = '" + status + "' where zwid = '" + jobcode + "'";
 				rs.executeSql(sql);
 			} else {
-				sql = "insert into uf_hr_activitycode(zwid,zwms,sxzt,channel,seq,gradeId,managerType) values ('" + jobcode + "','" + descr + "','" + status + "','"+channel+"','"+seq+"','"+gradeId+"','"+managerType+"')";
+				sql = "insert into uf_hr_activitycode(zwid,zwms,zwjc,sxzt) values ('" + jobcode + "','" + descr + "','"
+						+ descrShort + "','" + status + "')";
 				rs.executeSql(sql);
 			}
 
-			ReturnInfo ri = hoa.operJobActivities(descr, descr);
+			ReturnInfo ri = hoa.operJobActivities(descr, descrShort);
 			JSONObject resutlJo = new JSONObject();
 			if (!ri.isTure()) {
 				sign = "E";
@@ -250,7 +239,7 @@ public class SysnHrOrgWebserviceImpl {
 		JSONObject json = null;
 		JSONArray jsa = null;
 		String zwms = "";// 职务描述
-		//String zwjc = "";// 职务简称
+		String zwjc = "";// 职务简称
 		String sign = "";
 		json = new JSONObject(jsonString);
 		jsa = json.getJSONArray("positions");
@@ -260,26 +249,24 @@ public class SysnHrOrgWebserviceImpl {
 			JSONObject json1 = jsa.getJSONObject(i);
 			String positionNbr = json1.getString("positionNbr");// 职位ID
 			String descr = json1.getString("descr");// 职位描述
-			//String descrShort = json1.getString("descrShort");// 职位简称
+			String descrShort = json1.getString("descrShort");// 职位简称
 			String status = json1.getString("status");// 生效状态
-			//String deptId = json1.getString("deptId");// 部门ID
+			String deptId = json1.getString("deptId");// 部门ID
 			String jobcode = json1.getString("jobcode");// 职务ID
-			//String locationId = json1.getString("locationId");// 地点ID
-			//String channel = json1.getString("channel");// 通道
-			//String sequence = json1.getString("sequence");// 序列
+			String locationId = json1.getString("locationId");// 地点ID
+			String channel = json1.getString("channel");// 通道
+			String sequence = json1.getString("sequence");// 序列
 			String actionFlag = json1.getString("actionFlag");// 数据操作标识
-			//String vacancies = json1.getString("vacancies");// 编制人数
-			//String graderank = json1.getString("graderank");// 职等区间
-			//String reportPosn = json1.getString("reportPosn");// 直接上级职位
-			//String damagePosn = json1.getString("damagePosn");// 危害岗位
-			String posnCate = json1.getString("posnCate");// 岗位大类
-			String posnClass = json1.getString("posnClass");// posnClass
+			String vacancies = json1.getString("vacancies");// 编制人数
+			String graderank = json1.getString("graderank");// 职等区间
+			String reportPosn = json1.getString("reportPosn");// 直接上级职位
+			String damagePosn = json1.getString("damagePosn");// 危害岗位
 			JSONObject resutlJo = new JSONObject();
 			String sql = "select id,zwms,zwjc from uf_hr_activitycode where zwid ='" + jobcode + "' ";
 			rs.executeSql(sql);
 			if (rs.next()) {
 				zwms = Util.null2String(rs.getString("zwms"));
-				//zwjc = Util.null2String(rs.getString("zwjc"));
+				zwjc = Util.null2String(rs.getString("zwjc"));
 			}
 			///
 			if(zwms.equals("")){
@@ -296,11 +283,13 @@ public class SysnHrOrgWebserviceImpl {
 				count = rs.getInt("count");
 			}
 			if (count > 0) {
-				sql = "update uf_hr_jobtitlecode set jobcode = '" + jobcode + "',descr='" + descr + "',status='" + status + "',posnCate='"+posnCate+"',posnClass='"+posnClass+"' where positionNbr = '" + positionNbr+ "'";
+				sql = "update uf_hr_jobtitlecode set jobcode = '" + jobcode + "',locationId = '" + locationId
+						+ "',channel='" + channel + "',sequence='" + sequence + "',descr='" + descr + "',descrShort='" + descrShort + "',status='" + status + "',deptId='" + deptId + "'" + 
+						",vacancies='" + vacancies + "',graderank='" + graderank + "',reportPosn='"+reportPosn+"',damagePosn='"+damagePosn+"' where positionNbr = '" + positionNbr+ "'";
 				rs.executeSql(sql);
 			} else {
-				sql = "insert into uf_hr_jobtitlecode(positionNbr,jobcode,descr,status,posnCate,posnClass) values ('"
-						+ positionNbr + "','" + jobcode + "','" + descr+ "','" + status+ "','"+posnCate+"','"+posnClass+"')";
+				sql = "insert into uf_hr_jobtitlecode(positionNbr,jobcode,locationId,channel,sequence,descr,descrShort,status,deptId,vacancies,graderank,reportPosn,damagePosn) values ('"
+						+ positionNbr + "','" + jobcode + "','" + locationId + "','" + channel + "','" + sequence+ "','" + descr+ "','" + descrShort+ "','" + status+ "','" + deptId+ "','" + vacancies+ "','" + graderank+ "','"+reportPosn+"','"+damagePosn+"')";
 				rs.executeSql(sql);
 			}
 			HrmJobTitleBean hjt = new HrmJobTitleBean();
@@ -308,10 +297,10 @@ public class SysnHrOrgWebserviceImpl {
 			hjt.setJobtitlecode(positionNbr);
 			hjt.setJobtitlename(descr);
 			hjt.setJobtitlemark(descr);
-			hjt.setJobtitleremark(descr);
+			hjt.setJobtitleremark(descrShort);
 			// 所属部门 0 是通过id获取 1是通过code获取
-			//hjt.setDeptIdOrCode(1);
-			//hjt.setJobdepartmentCode(deptId);
+			hjt.setDeptIdOrCode(1);
+			hjt.setJobdepartmentCode(deptId);
 			hjt.setSuperJobCode("");
 			// 职位 直接通过字段去查询，没有就添加，有就直接获取
 			hjt.setJobactivityName(zwms);
@@ -445,7 +434,7 @@ public class SysnHrOrgWebserviceImpl {
 		String jkryid = "";// 兼岗人员id
 		String hr_status = "";// 人员状态
 		String repordsTold = "";// 直接上级工号
-		//String repordsToPosn = "";// 直接上级岗位
+		String repordsToPosn = "";// 直接上级岗位
 		String lastupdttm = "";// 最后更新日期
 		String managerid = "";
 		String idenCategory = "";//身份类别
@@ -455,8 +444,6 @@ public class SysnHrOrgWebserviceImpl {
 		String loginid = "";
 		String seclevel = "";
 		String yglb = "";//员工类型 0直接 1间接
-		String repordsToRcd = "";//直接上级所属员工记录号
-		String emplClass = "";//员工类别
 		
 		String sql_dt = "";
 		String sql = "select loginid,seclevel from hrmresource where id="+ryid;
@@ -487,11 +474,9 @@ public class SysnHrOrgWebserviceImpl {
 			positionNbr = Util.null2String(rs.getString("positionNbr"));
 			hr_status = Util.null2String(rs.getString("hr_status"));
 			repordsTold = Util.null2String(rs.getString("repordsTold"));
-			//repordsToPosn = Util.null2String(rs.getString("repordsToPosn"));
+			repordsToPosn = Util.null2String(rs.getString("repordsToPosn"));
 			lastupdttm = Util.null2String(rs.getString("lastupdttm"));
 			idenCategory = Util.null2String(rs.getString("idenCategory"));
-			repordsToRcd = Util.null2String(rs.getString("repordsToRcd"));
-			emplClass = Util.null2String(rs.getString("emplClass"));
 			jobid = getJobtitleId(positionNbr);
 			if ("".equals(jobid)) {
 				if ("2".equals(num)) {
@@ -534,7 +519,6 @@ public class SysnHrOrgWebserviceImpl {
 						insertFlag = "1";
 						jobMap.put("belongto", ryid);
 						jobMap.put("workcode", emplid+emplRcd);
-						jobMap.put("seclevel", seclevel);
 					} else {
 						jobMap.put("ryid", jkryid);
 					}
@@ -542,37 +526,37 @@ public class SysnHrOrgWebserviceImpl {
 					jobMap.put("ryid", ryid);
 				}
 			}
-//			String ryids = Util.null2String(jobMap.get("ryid"));
-//			if("".equals(ryids)) {
-//				seclevel = "";
-//			}
-//			if(!"".equals(ryids)) {
-//				sql_dt = "select seclevel from hrmresource where id="+ryids;
-//				rs_dt.executeSql(sql_dt);
-//				if(rs_dt.next()) {
-//					seclevel = Util.null2String(rs_dt.getString("seclevel"));
-//				}
-//			}
-//			if ("A".equals(actionFlag) && "".equals(seclevel)) {
-//				if ("10".equals(idenCategory)) {
-//					if ("S".equals(jobIndiactor)) {
-//						jobMap.put("seclevel", "10");
-//					}else {
-//
-//						jobMap.put("seclevel", "0");
-//					}
-//				}else {
-//					if ("S".equals(jobIndiactor)) {
-//						jobMap.put("seclevel", "10");
-//					}else {
-//						jobMap.put("seclevel", "11");
-//					}
-//				}
-//			}else {
-//				if("0".equals(yglb) && "20".equals(idenCategory)) {
-//					jobMap.put("seclevel", "11");
-//				}
-//			}
+			String ryids = Util.null2String(jobMap.get("ryid"));
+			if("".equals(ryids)) {
+				seclevel = "";
+			}
+			if(!"".equals(ryids)) {
+				sql_dt = "select seclevel from hrmresource where id="+ryids;
+				rs_dt.executeSql(sql_dt);
+				if(rs_dt.next()) {
+					seclevel = Util.null2String(rs_dt.getString("seclevel"));
+				}
+			}
+			if ("A".equals(actionFlag) && "".equals(seclevel)) {
+				if ("10".equals(idenCategory)) {
+					if ("S".equals(jobIndiactor)) {
+						jobMap.put("seclevel", "10");
+					}else {
+
+						jobMap.put("seclevel", "0");
+					}
+				}else {
+					if ("S".equals(jobIndiactor)) {
+						jobMap.put("seclevel", "10");
+					}else {
+						jobMap.put("seclevel", "11");
+					}
+				}
+			}else {
+				if("0".equals(yglb) && "20".equals(idenCategory)) {
+					jobMap.put("seclevel", "11");
+				}
+			}
 			
 			
 			//直接员工主岗loginid更新成工号 2018-11-13
@@ -632,20 +616,18 @@ public class SysnHrOrgWebserviceImpl {
 			} else {
 				jobCusMap.put("field25", "");
 			}
-			//jobCusMap.put("field32", Util.null2String(rs.getString("channel")));
-			//jobCusMap.put("field33", Util.null2String(rs.getString("sequence")));
-			jobCusMap.put("field42",emplClass);
+			jobCusMap.put("field32", Util.null2String(rs.getString("channel")));
+			jobCusMap.put("field33", Util.null2String(rs.getString("sequence")));
 			//jobCusMap.put("field34", Util.null2String(rs.getString("grade")));
 			//if (!"".equals(repordsTold) && !"".equals(repordsToPosn)) { 2018-11-29
 			if (!"".equals(repordsTold)) {
-//				managerid = getZgryid(repordsTold, getJobtitleId(repordsToPosn));
-//				if ("".equals(managerid)) {
-//					managerid = getJgry(repordsTold, getJobtitleId(repordsToPosn));
-//				}
-//				if("".equals(managerid)) {
-//					managerid = getOtherRyid(repordsTold,getJobtitleId(repordsToPosn));
-//				}
-				managerid = getmgid(repordsTold,repordsToRcd);
+				managerid = getZgryid(repordsTold, getJobtitleId(repordsToPosn));
+				if ("".equals(managerid)) {
+					managerid = getJgry(repordsTold, getJobtitleId(repordsToPosn));
+				}
+				if("".equals(managerid)) {
+					managerid = getOtherRyid(repordsTold,getJobtitleId(repordsToPosn));
+				}
 			}
 			jobMap.put("managerid", managerid);
 			if ("U".equals(actionFlag)) {
@@ -731,7 +713,6 @@ public class SysnHrOrgWebserviceImpl {
 			cusMap1.put("field28", Util.null2String(jo.getString("accountBank")));// 开户行名称
 			cusMap1.put("field29", Util.null2String(jo.getString("coupletNumber")));// 联行号
 			cusMap.put("field40", Util.null2String(jo.getString("Party")));// 甲方主体
-			comMap.put("SecLevel", Util.null2String(jo.getString("SecLevel")));// 甲方主体
 			
 			ReturnInfo ri = hoa.insertUpdatePerson(comMap, cusMap, cusMap1);
 			JSONObject resutlJo = new JSONObject();
@@ -927,34 +908,6 @@ public class SysnHrOrgWebserviceImpl {
 			workcode = emplid + "1";
 		}
 		return workcode;
-	}
-	/**
-	 * 根据记录号获取上级
-	 * @param repordsTold
-	 * @param repordsToRcd
-	 * @return
-	 */
-	public String getmgid(String repordsTold,String repordsToRcd) {
-		RecordSet rs = new RecordSet();
-		String sql = "";
-		String ryid = "";
-		if("".equals(repordsTold)) {
-			return "";
-		}
-		if("".equals(repordsToRcd)||"0".equals(repordsToRcd)) {
-			sql = "select id from hrmresource where workcode = '" + repordsTold + "'  and nvl(belongto,0)<=0  order by id desc";
-			rs.executeSql(sql);
-			if (rs.next()) {
-				ryid = Util.null2String(rs.getString("id"));
-			}
-		}else {
-			sql = "select id from hrmresource where workcode = '" + repordsTold + repordsToRcd + "'   order by id desc";
-			rs.executeSql(sql);
-			if (rs.next()) {
-				ryid = Util.null2String(rs.getString("id"));
-			}
-		}
-		return ryid;
 	}
 	/**
 	 * 根据工号获取人员id
@@ -1258,16 +1211,14 @@ public class SysnHrOrgWebserviceImpl {
 				map.put("actionFlag", Util.null2String(json1.get("actionFlag")));// 数据操作标识
 				//map.put("batchNumber", Util.null2String(json1.get("batchNumber")));// 批次号------用不着
 				map.put("repordsTold", Util.null2String(json1.get("repordsTold")));// 直接上级
-				//map.put("repordsToPosn", Util.null2String(json1.get("repordsToPosn")));// 直接上级职位id
+				map.put("repordsToPosn", Util.null2String(json1.get("repordsToPosn")));// 直接上级职位id
 				map.put("sfcl", "0");// 是否处理 0 未处理 1处理
-				//map.put("jobcode", Util.null2String(json1.get("jobcode")));// 职务ID
-				//map.put("channel", Util.null2String(json1.get("channel")));// 通道
-				//map.put("sequence", Util.null2String(json1.get("sequence")));// 序列
+				map.put("jobcode", Util.null2String(json1.get("jobcode")));// 职务ID
+				map.put("channel", Util.null2String(json1.get("channel")));// 通道
+				map.put("sequence", Util.null2String(json1.get("sequence")));// 序列
 				//map.put("grade", Util.null2String(json1.get("grade")));// 职等
 				map.put("lastupdttm", Util.null2String(json1.get("lastupdttm")));// 最后更新日期
 				map.put("pc", pc);
-				map.put("repordsToRcd", Util.null2String(json1.get("repordsToRcd")));// 直接上级所属员工记录号
-				map.put("emplClass", Util.null2String(json1.get("emplClass")));// 员工类别
 				insert.insert(map, "uf_personneljob");
 			} catch (Exception e) {
 				log.writeLog("InsertPersonActiovityInfo 出错-------" + json1.toString());
@@ -1290,41 +1241,5 @@ public class SysnHrOrgWebserviceImpl {
 		}
 		return jo;
 	}
-	
-	public String checkIsUpdatePerSub(String departmentcode,String newSubcompanyid) {
-		RecordSet rs = new RecordSet();
-		String result = "0";//0不执行
-		String sql = "";
-		String deptid = "";
-		String subcompanyid1 = "";
-		sql = "select id,subcompanyid1 from HrmDepartment where departmentcode=''";
-		rs.executeSql(sql);
-		if(rs.next()) {
-			deptid = Util.null2String(rs.getString("id"));
-			subcompanyid1 = Util.null2String(rs.getString("subcompanyid1"));
-		}
-		if("".equals(deptid)) {
-			 result = "0";
-		}else {
-			if(!"".equals(subcompanyid1)&&!subcompanyid1.equals(newSubcompanyid)) {
-				result = "1";
-			}
-		}
-		return result;
-	}
-	
-	public void updatePersonCompany(String deptcode,String subcompanyid) {
-		RecordSet rs = new RecordSet();
-		String deptid = "";
-		String sql = "select id from hrmdepartment where departmentcode='"+deptcode+"'";
-		rs.executeSql(sql);
-		if(rs.next()) {
-			deptid = Util.null2String(rs.getString("id"));
-		}
-		if(!"".equals(deptid)) {
-			sql = "update hrmresource set subcompanyid1='"+subcompanyid+"' where departmentid='"+deptid+"'";
-			rs.executeSql(sql);
-		}
-		
-	}
+
 }
