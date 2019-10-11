@@ -95,7 +95,7 @@ public class CreateKJQRPZXML {
 		String tablename_pk = gg.getTableName("PKLC");//排款
 		XmlUtil xu = new XmlUtil();
 		String sql = "";
-		String voucherid = String.valueOf(new Date().getTime());
+		String voucherid = "GNS"+String.valueOf(new Date().getTime());
 		String pkids = "";
 		String kjqrqq = "";
 		String gszt = "";
@@ -127,7 +127,7 @@ public class CreateKJQRPZXML {
 		xml.append("<voucher id=\""+voucherid+"\">").append("\n");
 		xml.append("<voucher_head>").append("\n");
 		xml.append("<company>"+receiver+"</company>").append("\n");		
-		xml.append("<voucher_type>银付</voucher_type>").append("\n");
+		xml.append("<voucher_type>GNS付款凭证</voucher_type>").append("\n");
 		xml.append("<fiscal_year>"+kjqrqq.substring(0,4)+"</fiscal_year>").append("\n");
 		xml.append("<accounting_period>"+kjqrqq.substring(5,7)+"</accounting_period>").append("\n");
 		xml.append("<voucher_id>0</voucher_id>").append("\n");

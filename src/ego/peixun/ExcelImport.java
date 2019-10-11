@@ -30,26 +30,48 @@ public class ExcelImport {
 		try {
 			for (int i = 1; i < rows; i++) {
 				Cell[] cells = sheet.getRow(i);
-
-				String GH = getStr(cells[0].getContents());
-				String FirstName = getStr(cells[1].getContents());
-				String LastName = getStr(cells[2].getContents());
-				String HTLX = getStr(cells[3].getContents());
-				String CBZX = getStr(cells[4].getContents());
-				String ZZDM = getStr(cells[5].getContents());
-				String ZZMC = getStr(cells[6].getContents());
-				String ZW = getStr(cells[7].getContents());
-				String KCQD = getStr(cells[8].getContents());
-				String PEMU = getStr(cells[9].getContents());
-				String PXNF = getStr(cells[10].getContents());
-				String KSSJ = getStr(cells[11].getContents());
-				String JSSJ = getStr(cells[12].getContents());
-				String SC = getStr(cells[13].getContents());
-				String PXZX = getStr(cells[14].getContents());
-				String CYQK = getStr(cells[16].getContents());
-				String GRFY = getStr(cells[17].getContents());
-				String ZFY = getStr(cells[18].getContents());
-				String ZT = getStr(cells[19].getContents());
+				String GH = "";
+				String FirstName = "";
+				String LastName = "";
+				String HTLX ="";
+				String CBZX = "";
+				String ZZDM = "";
+				String ZZMC ="";
+				String ZW ="";
+				String KCQD = "";
+				String PEMU = "";
+				String PXNF = "";
+				String KSSJ ="";
+				String JSSJ = "";
+				String SC = "";
+				String PXZX = "";
+				String CYQK = "";
+				String GRFY ="";
+				String ZFY = "";
+				String ZT = "";
+				try {
+				GH = getStr(cells[0].getContents());
+				FirstName = getStr(cells[1].getContents());
+				LastName = getStr(cells[2].getContents());
+				HTLX = getStr(cells[3].getContents());
+				CBZX = getStr(cells[4].getContents());
+				ZZDM = getStr(cells[5].getContents());
+				ZZMC = getStr(cells[6].getContents());
+				ZW = getStr(cells[7].getContents());
+				KCQD = getStr(cells[8].getContents());
+				PEMU = getStr(cells[9].getContents());
+				PXNF = getStr(cells[10].getContents());
+				KSSJ = getStr(cells[11].getContents());
+				JSSJ = getStr(cells[12].getContents());
+				SC = getStr(cells[13].getContents());
+				PXZX = getStr(cells[14].getContents());
+				CYQK = getStr(cells[16].getContents());
+				GRFY = getStr(cells[17].getContents());
+				ZFY = getStr(cells[18].getContents());
+				ZT = getStr(cells[19].getContents());
+				}catch(Exception e) {
+					
+				}
 				String pxry = "-1";
 				if (!"".equals(GH)) {
 					sql = "select * from hrmresource where workcode='" + GH
@@ -58,6 +80,8 @@ public class ExcelImport {
 					if (rs.next()) {
 						pxry = Util.null2String(rs.getString("id"));
 					}
+				}else {
+					continue;
 				}
 				String bm = "-1";
 				if (!"".equals(ZZDM)) {
@@ -112,6 +136,7 @@ public class ExcelImport {
 			}
 
 		} catch (Exception e) {
+			log.writeLog(e);
 			return "-1";
 		}
 

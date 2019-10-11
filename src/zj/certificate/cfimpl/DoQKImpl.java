@@ -71,7 +71,8 @@ public class DoQKImpl {
 		String bm_dt1 ="";//科目编码
 		String hxje_dt1 = "";//金额
 		String dtid="";
-		String fplx_dt1="";//发票类型
+		//String fplx_dt1="";//发票类型
+		String sfhs_dt1 = "";
 		String fphm_dt1="";//发票号
 		String kpf_dt1="";//开票方
 		String zzsbm_dt1="";//进项税编号
@@ -90,7 +91,8 @@ public class DoQKImpl {
 			bm_dt1 = Util.null2String(rs.getString("bm"));
 			dqm_dt1 = Util.null2String(rs.getString("dqm"));
 			hxje_dt1 = Util.null2String(rs.getString("hxje")).replaceAll(",", "");
-			fplx_dt1 = Util.null2String(rs.getString("fplx"));
+			//fplx_dt1 = Util.null2String(rs.getString("fplx"));
+			sfhs_dt1 = Util.null2String(rs.getString("sfhs"));
 			fphm_dt1 = Util.null2String(rs.getString("fphm"));
 			kpf_dt1 = Util.null2String(rs.getString("kpf"));
 			zzsbm_dt1 = Util.null2String(rs.getString("zzsbm"));
@@ -117,7 +119,7 @@ public class DoQKImpl {
 				bmdm_dt1 = "0000";
 			}
 			//mapStr.put("REFERENCE1", fbbm_dt1);
-				if("0".equals(fplx_dt1)){
+				if("0".equals(sfhs_dt1)){
 					String REFERENCE10=fphm_dt1+" "+kpf_dt1+" 进项税";
 					mapStr.put("interface_seq", ccf.getInterfaceSeq());	
 					if("".equals(zzsbm_dt1)){

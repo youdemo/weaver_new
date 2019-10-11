@@ -15,8 +15,10 @@ import weaver.general.BaseBean;
 
 public class Test {
 	public static void main(String args[]) throws Exception {
-		String result = "<?xml version=\"1.0\" encoding=\"GBK\"?><CMBSDKPGK><INFO><DATTYP>2</DATTYP><ERRMSG></ERRMSG><FUNNAM>DCPAYREQ</FUNNAM><LGNNAM>学科园科兴学532</LGNNAM><RETCOD>0</RETCOD></INFO><NTQPAYRQZ><ERRCOD>SUC0000</ERRCOD><OPRALS>终极审批</OPRALS><OPRSQN>001</OPRSQN><REQNBR>0030221519</REQNBR><REQSTS>AUT</REQSTS><SQRNBR>0000000000</SQRNBR><YURREF>201905130004</YURREF></NTQPAYRQZ></CMBSDKPGK>";
-		doxml(result);
+		String aa="<<aa<<".replaceAll("<", "&lt");
+		System.out.println(aa);
+		//String result = "<?xml version=\"1.0\" encoding=\"GBK\"?><CMBSDKPGK><INFO><DATTYP>2</DATTYP><ERRMSG></ERRMSG><FUNNAM>DCPAYREQ</FUNNAM><LGNNAM>学科园科兴学532</LGNNAM><RETCOD>0</RETCOD></INFO><NTQPAYRQZ><ERRCOD>SUC0000</ERRCOD><OPRALS>终极审批</OPRALS><OPRSQN>001</OPRSQN><REQNBR>0030221519</REQNBR><REQSTS>AUT</REQSTS><SQRNBR>0000000000</SQRNBR><YURREF>201905130004</YURREF></NTQPAYRQZ></CMBSDKPGK>";
+		//doxml(result);
 	}
 	
 	public static void doxml(String result) throws Exception {

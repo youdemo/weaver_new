@@ -116,7 +116,8 @@ public class DoTRImpl {
 		String kmbm_dt1="";//科目编号
 		String je_dt1 = "";//金额
 		String dtid="";
-		String fplx_dt1="";//发票类型
+		//String fplx_dt1="";//发票类型
+		String sfhs_dt1 = "";
 		String fph_dt1="";//发票号
 		String kpf_dt1="";//开票方
 		String jxsbm_dt1="";//进项税编号
@@ -125,14 +126,15 @@ public class DoTRImpl {
 		String jsrq_dt1="";
 		String nr_dt1="";
 		String cutmoney="0";
-		sql="select * from "+tableName+"_dt1 where (fykm='0' or fplx='0') and mainid="+mainId;
+		sql="select * from "+tableName+"_dt1 where (fykm='0' or sfhs='0') and mainid="+mainId;
 		rs.executeSql(sql);
 		while(rs.next()){
 			dtid = Util.null2String(rs.getString("id"));
 			fykm_dt1 = Util.null2String(rs.getString("fykm"));
 			kmbm_dt1 = Util.null2String(rs.getString("kmbm"));
 			je_dt1 = Util.null2String(rs.getString("je")).replaceAll(",", "");
-			fplx_dt1 = Util.null2String(rs.getString("fplx"));
+			//fplx_dt1 = Util.null2String(rs.getString("fplx"));
+			sfhs_dt1 = Util.null2String(rs.getString("sfhs"));
 			fph_dt1 = Util.null2String(rs.getString("fph"));
 			kpf_dt1 = Util.null2String(rs.getString("kpf"));
 			ccrq_dt1 = Util.null2String(rs.getString("ccrq"));
@@ -142,7 +144,7 @@ public class DoTRImpl {
 			se_dt1 = Util.null2String(rs.getString("se")).replaceAll(",", "");
 			if("0".equals(fykm_dt1)){
 				cutmoney=iu.add(cutmoney,je_dt1);
-				if("0".equals(fplx_dt1)){
+				if("0".equals(sfhs_dt1)){
 					String REFERENCE10=fph_dt1+" "+kpf_dt1+" 进项税";
 					mapStr.put("interface_seq", ccf.getInterfaceSeq());
 					if("".equals(jxsbm_dt1)){
@@ -182,7 +184,7 @@ public class DoTRImpl {
 				mapStr.put("REFERENCE30", ccf.interfaceseq+"");
 				 ccf.interfaceseq= ccf.interfaceseq+10;
 				iu.insertzj(mapStr, "ZJ_GL_INTERFACE");
-			}else if("0".equals(fplx_dt1)){
+			}else if("0".equals(sfhs_dt1)){
 				String REFERENCE10=fph_dt1+" "+kpf_dt1+" 进项税";
 				mapStr.put("interface_seq", ccf.getInterfaceSeq());
 				if("".equals(jxsbm_dt1)){

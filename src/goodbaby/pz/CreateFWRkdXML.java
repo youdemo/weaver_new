@@ -15,7 +15,7 @@ public class CreateFWRkdXML {
 		String tablename_ht = gg.getTableName("FKJHT");//非框架合同
 		XmlUtil xu = new XmlUtil();
 		String sql = "";
-		String voucherid = String.valueOf(new Date().getTime());
+		String voucherid = "GNS"+String.valueOf(new Date().getTime());
 		String scrname = "";
 		if("1".equals(scr)) {
 			scrname = "系统管理员";
@@ -37,9 +37,9 @@ public class CreateFWRkdXML {
 		xml.append("<voucher_head>").append("\n");
 		xml.append("<company>"+receiver+"</company>").append("\n");
 		if(!"GCPC".equals(gszt)&&!"GCPC02".equals(gszt)&&!"GCPN".equals(gszt)&&!"GCPX".equals(gszt)&&!"PCPC01".equals(gszt)) {
-			xml.append("<voucher_type>记账凭证transfer</voucher_type>").append("\n");
+			xml.append("<voucher_type>GNS记账凭证</voucher_type>").append("\n");
 		}else {
-			xml.append("<voucher_type>转05</voucher_type>").append("\n");
+			xml.append("<voucher_type>GNS记账凭证</voucher_type>").append("\n");
 		}
 		xml.append("<fiscal_year>"+begindate.substring(0,4)+"</fiscal_year>").append("\n");
 		xml.append("<accounting_period>"+begindate.substring(5,7)+"</accounting_period>").append("\n");

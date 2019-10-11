@@ -139,7 +139,8 @@ public class CollarStockAction implements Action {
 	public String mult(double a,double b,String c){
     	RecordSet rs = new RecordSet();
     	String result="";
-    	String sql="select cast(cast('"+a+"' as numeric(18,2))*cast('"+b+"' as numeric(18,2))*cast('"+c+"' as numeric(18,4)) as numeric(18,2)) as je  ";
+    	//String sql="select cast(cast('"+a+"' as numeric(18,2))*cast('"+b+"' as numeric(18,2))*cast('"+c+"' as numeric(18,4)) as numeric(18,2)) as je  ";
+    	String sql="select cast("+a+"*"+b+"*"+c+" as numeric(18,2)) as je  ";
 		rs.executeSql(sql);
 		if(rs.next()){
 			result = Util.null2String(rs.getString("je"));

@@ -2,15 +2,15 @@ package hhgd.sap;
 
 public class SapOaMappingBean {
 
-	public int id;
-	public String workflowId;
-	public String OAFieldName;
-	public String OATableType;
-	public String SAPFunctionName;
-	public String SAPParameterType;
-	public String SAPFieldName;
-	public String SAPParameterName;
-	public String SAPTableType;
+	private int id;
+	private String workflowId;
+	private String OAFieldName;
+	private String OATableType;
+	private String SAPFunctionName;
+	private String SAPParameterType;
+	private String SAPFieldName;
+	private String SAPParameterName;
+	private String SAPTableType;
 	
 	public int getId() {
 		return id;

@@ -7,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import feilida.updateRqid;
 import gvo.hr.sysn.tmc.org.HrmDepartmentBean;
 import gvo.hr.sysn.tmc.org.HrmJobTitleBean;
 import gvo.hr.sysn.tmc.org.HrmOrgAction;
@@ -534,7 +533,7 @@ public class SysnHrOrgWebserviceImpl {
 						insertFlag = "1";
 						jobMap.put("belongto", ryid);
 						jobMap.put("workcode", emplid+emplRcd);
-						jobMap.put("seclevel", seclevel);
+						//jobMap.put("seclevel", seclevel);
 					} else {
 						jobMap.put("ryid", jkryid);
 					}
@@ -542,37 +541,37 @@ public class SysnHrOrgWebserviceImpl {
 					jobMap.put("ryid", ryid);
 				}
 			}
-//			String ryids = Util.null2String(jobMap.get("ryid"));
-//			if("".equals(ryids)) {
-//				seclevel = "";
-//			}
-//			if(!"".equals(ryids)) {
-//				sql_dt = "select seclevel from hrmresource where id="+ryids;
-//				rs_dt.executeSql(sql_dt);
-//				if(rs_dt.next()) {
-//					seclevel = Util.null2String(rs_dt.getString("seclevel"));
-//				}
-//			}
-//			if ("A".equals(actionFlag) && "".equals(seclevel)) {
-//				if ("10".equals(idenCategory)) {
-//					if ("S".equals(jobIndiactor)) {
-//						jobMap.put("seclevel", "10");
-//					}else {
-//
-//						jobMap.put("seclevel", "0");
-//					}
-//				}else {
-//					if ("S".equals(jobIndiactor)) {
-//						jobMap.put("seclevel", "10");
-//					}else {
-//						jobMap.put("seclevel", "11");
-//					}
-//				}
-//			}else {
-//				if("0".equals(yglb) && "20".equals(idenCategory)) {
-//					jobMap.put("seclevel", "11");
-//				}
-//			}
+			String ryids = Util.null2String(jobMap.get("ryid"));
+			if("".equals(ryids)) {
+				seclevel = "";
+			}
+			if(!"".equals(ryids)) {
+				sql_dt = "select seclevel from hrmresource where id="+ryids;
+				rs_dt.executeSql(sql_dt);
+				if(rs_dt.next()) {
+					seclevel = Util.null2String(rs_dt.getString("seclevel"));
+				}
+			}
+			if ("A".equals(actionFlag) && "".equals(seclevel)) {
+				if ("10".equals(idenCategory)) {
+					if ("S".equals(jobIndiactor)) {
+						jobMap.put("seclevel", "10");
+					}else {
+
+						jobMap.put("seclevel", "0");
+					}
+				}else {
+					if ("S".equals(jobIndiactor)) {
+						jobMap.put("seclevel", "10");
+					}else {
+						jobMap.put("seclevel", "11");
+					}
+				}
+			}else {
+				if("0".equals(yglb) && "20".equals(idenCategory)) {
+					jobMap.put("seclevel", "11");
+				}
+			}
 			
 			
 			//直接员工主岗loginid更新成工号 2018-11-13
@@ -650,11 +649,17 @@ public class SysnHrOrgWebserviceImpl {
 			jobMap.put("managerid", managerid);
 			if ("U".equals(actionFlag)) {
 				ri = hoa.updatePersonJobInfo(jobMap, jobCusMap);
+				if(ri.isTure() && "5".equals(jobMap.get("status"))) {
+					dismissPerson(jobMap.get("ryid"));
+				}
 			} else if ("A".equals(actionFlag)) {
 				if ("1".equals(insertFlag)) {
 					ri = hoa.insertPersonJobInfo(jobMap, jobCusMap);
 				} else {
 					ri = hoa.updatePersonJobInfo(jobMap, jobCusMap);
+					if(ri.isTure() && "5".equals(jobMap.get("status"))) {
+						dismissPerson(jobMap.get("ryid"));
+					}
 				}
 
 			}
@@ -731,7 +736,7 @@ public class SysnHrOrgWebserviceImpl {
 			cusMap1.put("field28", Util.null2String(jo.getString("accountBank")));// 开户行名称
 			cusMap1.put("field29", Util.null2String(jo.getString("coupletNumber")));// 联行号
 			cusMap.put("field40", Util.null2String(jo.getString("Party")));// 甲方主体
-			comMap.put("SecLevel", Util.null2String(jo.getString("SecLevel")));// 甲方主体
+			//comMap.put("SecLevel", Util.null2String(jo.getString("SecLevel")));// 甲方主体
 			
 			ReturnInfo ri = hoa.insertUpdatePerson(comMap, cusMap, cusMap1);
 			JSONObject resutlJo = new JSONObject();
@@ -1325,6 +1330,32 @@ public class SysnHrOrgWebserviceImpl {
 			sql = "update hrmresource set subcompanyid1='"+subcompanyid+"' where departmentid='"+deptid+"'";
 			rs.executeSql(sql);
 		}
+		
+	}
+	
+	public void dismissPerson(String ryid){
+		RecordSet rs = new RecordSet();
+		RecordSet rs2 = new RecordSet();
+		if("".equals(ryid)) {
+			return;
+		}
+        rs.executeSql("delete from hrmrolemembers where resourceid="+ryid);
+        rs.executeSql("delete from PluginLicenseUser where plugintype='mobile' and sharetype='0' and sharevalue='"+ryid+"'");
+        String sql = "update HrmResource set status =5, loginid='',password='' ,account='' where id = "+ryid;
+        rs.executeSql(sql);
+        sql="delete hrmgroupmembers where userid="+ryid;
+        rs.executeSql(sql);
+        rs.executeSql("select id,readers from cowork_items where coworkers like '%"+ryid+"%' and readers not like '"+ryid+"%'");
+      	while(rs.next()){
+      		String cowork_id = Util.null2String(rs.getString(1));
+      		String readers = Util.null2String(rs.getString(2));
+      		if(!readers.equals("")){ 
+      			readers = readers + ryid + ",";
+      		}else{ 
+      			readers = "," + ryid + ",";
+      		}
+      		rs2.executeSql("update cowork_items set readers='"+readers+"' where id="+cowork_id);
+        }
 		
 	}
 }

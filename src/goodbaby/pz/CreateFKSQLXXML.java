@@ -83,7 +83,7 @@ public class CreateFKSQLXXML implements Action{
 		String sql = "";
 		String sql_dt = "";
 		String yjcbzx = "";
-		String voucherid = String.valueOf(new Date().getTime());
+		String voucherid = "GNS"+String.valueOf(new Date().getTime());
 		String scrname = "";
 		if("1".equals(scr)) {
 			scrname = "系统管理员";
@@ -138,14 +138,14 @@ public class CreateFKSQLXXML implements Action{
 		xml.append("<voucher_head>").append("\n");
 		xml.append("<company>"+receiver+"</company>").append("\n");
 		if(!"GCPC".equals(gszt)&&!"GCPC02".equals(gszt)&&!"GCPN".equals(gszt)&&!"GCPX".equals(gszt)&&!"PCPC01".equals(gszt)) {
-			xml.append("<voucher_type>记账凭证transfer</voucher_type>").append("\n");
+			xml.append("<voucher_type>GNS记账凭证</voucher_type>").append("\n");
 		}else {
-			xml.append("<voucher_type>转01</voucher_type>").append("\n");
+			xml.append("<voucher_type>GNS记账凭证</voucher_type>").append("\n");
 		}
 		
 		xml.append("<fiscal_year>"+nowDate.substring(0,4)+"</fiscal_year>").append("\n");
 		xml.append("<accounting_period>"+nowDate.substring(5,7)+"</accounting_period>").append("\n");
-		xml.append("<voucher_id>3</voucher_id>").append("\n");
+		xml.append("<voucher_id>0</voucher_id>").append("\n");
 		xml.append("<attachment_number>0</attachment_number>").append("\n");
 		xml.append("<prepareddate>"+nowDate+"</prepareddate>").append("\n");
 		xml.append("<enter>"+scrname+"</enter>").append("\n");

@@ -944,7 +944,7 @@ public class HrmOrgAction {
 			mapStr.put("belongto","-1");
 			mapStr.put("needdynapass","0");
 			mapStr.put("passwordstate","1");
-			mapStr.put("seclevel",comMap.get("SecLevel"));
+			//mapStr.put("seclevel",comMap.get("SecLevel"));
 			
 			
 			boolean isRun = tdu.insert(mapStr,"hrmresource");

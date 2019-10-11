@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import org.apache.axis.encoding.Base64;
 
 import weaver.conn.RecordSet;
-import weaver.conn.RecordSetDataSource;
 import weaver.docs.webservices.DocAttachment;
 import weaver.docs.webservices.DocInfo;
 import weaver.docs.webservices.DocServiceImpl;
@@ -18,6 +17,12 @@ import weaver.hrm.User;
 public class MoveISODoc {
 
 	BaseBean log = new BaseBean();
+	/**
+	 * 根据两套系统的目录编号同步文档
+	 * @param isoSecCode
+	 * @param oaSecCode
+	 * @return
+	 */
 	public String getDocList(String isoSecCode,String oaSecCode){
 		log.writeLog("开始同步文档ISO目录："+isoSecCode+" OA目录："+oaSecCode);
 		String iso_id = "";
@@ -77,7 +82,11 @@ public class MoveISODoc {
 		}
 		return "成功";
 	}
-	
+	/**
+	 * 根据目录编号获取目录id
+	 * @param code
+	 * @return
+	 */
 	public String getSecId(String code){
 		RecordSet rs = new RecordSet();
 		String secid="";
@@ -88,7 +97,11 @@ public class MoveISODoc {
 		}
 		return secid;
 	}
-	
+	/**
+	 * 根据人员工号获取人员id
+	 * @param workcode
+	 * @return
+	 */
 	public String getPersonId(String workcode){
 		RecordSet rs = new RecordSet();
 		String id="1";
@@ -99,7 +112,12 @@ public class MoveISODoc {
 		}
 		return id;
 	}
-	
+	/**
+	 * 根据iso文档编号获取文档附件
+	 * @param iso_id
+	 * @return
+	 * @throws Exception
+	 */
 	public DocAttachment[] getDocFile(String iso_id) throws Exception{
 		log.writeLog("导出iSO文件 文档编号"+iso_id);
 		DocAttachment[] docs=null;
@@ -140,7 +158,13 @@ public class MoveISODoc {
 		
 		return docs;
 	}
-	
+	/**
+	 * 根据文件路径获取附件流存入文档附件对象
+	 * @param fileUrl
+	 * @param fileName
+	 * @return
+	 * @throws Exception
+	 */
 	public DocAttachment getDocAttachment(String fileUrl,String fileName) throws Exception{
 		FileInputStream fi = new FileInputStream(new File(fileUrl));
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
@@ -156,7 +180,11 @@ public class MoveISODoc {
 		doca.setFilecontent(encode);
 		return doca;
 	}
-	
+	/**
+	 * 根据文档编号 判断文档是否导入
+	 * @param doccode
+	 * @return
+	 */
 	public boolean checkExist(String doccode){
 		RecordSet rs = new RecordSet();
 		int count =0;
@@ -170,7 +198,16 @@ public class MoveISODoc {
 		}
 		return false;
 	}
-	
+	/**
+	 * 调用oa系统方法 生成oa文档
+	 * @param name 文档名称
+	 * @param doccode 编号
+	 * @param docs 附件
+	 * @param createrid 创建人
+	 * @param seccategory 目录
+	 * @return 文档id
+	 * @throws Exception
+	 */
 	private String getDocId(String name, String doccode, DocAttachment[] docs,String createrid,String seccategory) throws Exception {
 		String docId = "";
 		DocInfo di= new DocInfo();
@@ -204,7 +241,11 @@ public class MoveISODoc {
 		
 		return docId;
 	}
-	
+	/**
+	 * 更新文档
+	 * @param docid
+	 * @param docedition
+	 */
 	public void updateDocedition(String docid,String docedition){
 		RecordSet rs = new RecordSet();
 		String sql="update DocDetail set docedition='"+docedition+"' where id="+docid;

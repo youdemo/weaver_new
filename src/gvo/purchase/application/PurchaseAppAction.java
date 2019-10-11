@@ -1,13 +1,11 @@
 package gvo.purchase.application;
 
-import gvo.purchase.application.SAPPR_MM_0_CreatePRService_pttBindingQSServiceStub.Response;
-import gvo.util.xml.SaxXmlUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ibm.db2.jcc.am.p;
-
+import gvo.purchase.application.SAPPR_MM_0_CreatePRService_pttBindingQSServiceStub.Response;
+import gvo.util.xml.SaxXmlUtil;
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;

@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
@@ -98,6 +99,14 @@ public class PostToBank {
 	public String doPost(String ids) {	
 		RecordSet rs = new RecordSet();
 		RecordSet rs_dt = new RecordSet();
+		String LGNNAM;
+		try {
+			LGNNAM = Util.null2String(new String(weaver.file.Prop.getPropValue("wgwypz","LGNNAM").getBytes("ISO-8859-1"),"UTF-8"));
+		} catch (Exception e1) {
+			LGNNAM = "";
+		}		
+		String DBTACC = Util.null2String(weaver.file.Prop.getPropValue("wgwypz","DBTACC"));//付方帐号
+		String DBTBBK = Util.null2String(weaver.file.Prop.getPropValue("wgwypz","DBTBBK"));//付方开户地区代码
 		//BaseBean log = new BaseBean();
 		writeLog("开始");
 		Map<String, String> resultMap = null;
@@ -123,20 +132,20 @@ public class PostToBank {
 			String reqdate = Util.null2String(rs.getString("reqdate"));//申请日期
 			String flowno = Util.null2String(rs.getString("flowno"));//单据编号
 			String paydate = Util.null2String(rs.getString("paydate"));//付款日期
-			String sf = Util.null2String(rs.getString("sf"));//省份
-			String cs = Util.null2String(rs.getString("cs"));//城市
+			String sf = Util.null2String(rs.getString("skyhsf"));//省份
+			String cs = Util.null2String(rs.getString("skyhcs"));//城市
 			String zy = Util.null2String(rs.getString("zy"));//摘要
 			String sfwzh = Util.null2String(rs.getString("sfwzh"));//是否为招行
-			sql_dt = "select sf from uf_sf where id="+sf;
-			rs_dt.executeSql(sql_dt);
-			if(rs_dt.next()) {
-				sf = Util.null2String(rs_dt.getString("sf"));
-			}
-			sql_dt = "select cs from uf_cs where id="+cs;
-			rs_dt.executeSql(sql_dt);
-			if(rs_dt.next()) {
-				cs = Util.null2String(rs_dt.getString("cs"));
-			}
+//			sql_dt = "select sf from uf_sf where id="+sf;
+//			rs_dt.executeSql(sql_dt);
+//			if(rs_dt.next()) {
+//				sf = Util.null2String(rs_dt.getString("sf"));
+//			}
+//			sql_dt = "select cs from uf_cs where id="+cs;
+//			rs_dt.executeSql(sql_dt);
+//			if(rs_dt.next()) {
+//				cs = Util.null2String(rs_dt.getString("cs"));
+//			}
 			if("0".equals(sfwzh)) {
 				sfwzh = "Y";
 			}else {
@@ -152,7 +161,7 @@ public class PostToBank {
 					"                           <INFO>\r\n" + 
 					"                              <FUNNAM>DCPAYREQ</FUNNAM>\r\n" + 
 					"                              <DATTYP>2</DATTYP>\r\n" + 
-					"                              <LGNNAM>学科园科兴学532</LGNNAM>\r\n" + 
+					"                              <LGNNAM>"+LGNNAM+"</LGNNAM>\r\n" + 
 					"                           </INFO>\r\n" + 
 					"                           <SDKPAYRQX>\r\n" + 
 					"                              <BUSCOD>N02030</BUSCOD>\r\n" + //业务类别 N02030:支付 N02040:集团支付
@@ -160,8 +169,8 @@ public class PostToBank {
 					"                           </SDKPAYRQX>\r\n" + 
 					"                           <DCPAYREQX>\r\n" + 
 					"                              <YURREF>"+flowno+"_"+id+"</YURREF>\r\n" + //业务号
-					"                              <DBTACC>755915711310210</DBTACC>\r\n" + //付款账号
-					"                              <DBTBBK>75</DBTBBK>\r\n" + //地区
+					"                              <DBTACC>"+DBTACC+"</DBTACC>\r\n" + //付款账号
+					"                              <DBTBBK>"+DBTBBK+"</DBTBBK>\r\n" + //地区
 					"                              <BNKFLG>"+sfwzh+"</BNKFLG>\r\n" + //Y：招行；N：非招行；
 					"                              <STLCHN>N</STLCHN>\r\n" + //结算方式
 					"                              <TRSAMT>"+paymount+"</TRSAMT>\r\n" + //金额
@@ -181,7 +190,7 @@ public class PostToBank {
 			
 			try {
 				writeLog("result parm="+parm);
-				result = postConnection("http://192.168.7.36:8080", parm);
+				result = postConnection("http://192.168.7.26:8080", parm);
 				zxjg = result.replace("'","''");
 				writeLog("result aaa:id="+id+" result="+result);
 			} catch (Exception e) {
@@ -199,7 +208,7 @@ public class PostToBank {
 					String OPRALS = Util.null2String(resultMap.get("OPRALS"));
 					String ERRTXT = Util.null2String(resultMap.get("ERRTXT"));
 					if("0".equals(RETCOD)) {
-						if(!"".equals(OPRALS) && "终极审批".equals(OPRALS)) {
+						if(!"".equals(OPRALS) && ("初级审批".equals(OPRALS)|| "终极审批".equals(OPRALS))) {
 							status = "0";
 							errtxt = OPRALS;
 						}else {

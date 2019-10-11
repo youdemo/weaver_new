@@ -76,7 +76,7 @@ public class CreateYFKXML implements Action {
 		String nowDate = dateFormate.format(new Date());
 		String sql = "";
 		String yjcbzx = "";
-		String voucherid = String.valueOf(new Date().getTime());
+		String voucherid = "GNS"+String.valueOf(new Date().getTime());
 		String scrname = "";
 		if ("1".equals(scr)) {
 			scrname = "系统管理员";
@@ -126,7 +126,7 @@ public class CreateYFKXML implements Action {
 		xml.append("<voucher id=\"" + voucherid + "\">").append("\n");
 		xml.append("<voucher_head>").append("\n");
 		xml.append("<company>" + receiver + "</company>").append("\n");
-		xml.append("<voucher_type>银付</voucher_type>").append("\n");
+		xml.append("<voucher_type>GNS付款凭证</voucher_type>").append("\n");
 		xml.append("<fiscal_year>" + nowDate.substring(0, 4) + "</fiscal_year>").append("\n");
 		xml.append("<accounting_period>" + nowDate.substring(5, 7) + "</accounting_period>").append("\n");
 		xml.append("<voucher_id>0</voucher_id>").append("\n");
